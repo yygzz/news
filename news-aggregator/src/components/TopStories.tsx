@@ -16,7 +16,7 @@ export function TopStories({ stories, moreStories = [] }: TopStoriesProps) {
   return (
     <section className="bg-white rounded-xl border border-gn-border p-4 mb-6">
       <div className="flex items-center gap-1 mb-4">
-        <h2 className="text-lg font-bold text-gray-900">Top stories</h2>
+        <h2 className="text-lg font-bold text-gray-900">头条要闻</h2>
         <ChevronRight className="w-5 h-5 text-gn-blue" />
       </div>
 
@@ -44,7 +44,7 @@ export function TopStories({ stories, moreStories = [] }: TopStoriesProps) {
         className="mt-4 w-full flex items-center justify-center gap-2 py-3 bg-gn-bg hover:bg-gray-200 rounded-lg text-sm font-medium text-gn-gray transition-colors"
       >
         <Newspaper className="w-4 h-4" />
-        {expanded ? 'Show less' : `See more headlines & perspectives${moreStories.length > 0 ? ` (${moreStories.length})` : ''}`}
+        {expanded ? '收起' : `查看全部头条与观点${moreStories.length > 0 ? ` (${moreStories.length})` : ''}`}
       </button>
     </section>
   );

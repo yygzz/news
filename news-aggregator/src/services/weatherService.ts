@@ -26,18 +26,18 @@ export interface PresetCity {
 }
 
 export const PRESET_CITIES: PresetCity[] = [
-  { name: 'Beijing', latitude: 39.9042, longitude: 116.4074 },
-  { name: 'Shanghai', latitude: 31.2304, longitude: 121.4737 },
-  { name: 'Shenzhen', latitude: 22.5431, longitude: 114.0579 },
-  { name: 'Chengdu', latitude: 30.5728, longitude: 104.0668 },
-  { name: 'New York', latitude: 40.7128, longitude: -74.006 },
-  { name: 'London', latitude: 51.5074, longitude: -0.1278 },
-  { name: 'Tokyo', latitude: 35.6762, longitude: 139.6503 },
-  { name: 'Singapore', latitude: 1.3521, longitude: 103.8198 },
+  { name: '北京', latitude: 39.9042, longitude: 116.4074 },
+  { name: '上海', latitude: 31.2304, longitude: 121.4737 },
+  { name: '深圳', latitude: 22.5431, longitude: 114.0579 },
+  { name: '成都', latitude: 30.5728, longitude: 104.0668 },
+  { name: '纽约', latitude: 40.7128, longitude: -74.006 },
+  { name: '伦敦', latitude: 51.5074, longitude: -0.1278 },
+  { name: '东京', latitude: 35.6762, longitude: 139.6503 },
+  { name: '新加坡', latitude: 1.3521, longitude: 103.8198 },
 ];
 
 const MOCK_WEATHER: WeatherData = {
-  location: 'Beijing',
+  location: '北京',
   temperature: 26,
   weatherCode: 0,
   isDay: true,

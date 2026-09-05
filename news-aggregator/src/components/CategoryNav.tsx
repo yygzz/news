@@ -36,7 +36,7 @@ export function CategoryNav({ activeCategory, onSelect }: CategoryNavProps) {
               : 'text-gn-gray border-transparent hover:text-gray-900'
           }`}
         >
-          U.S.
+          美国
         </button>
         {NAV_CATEGORIES.map(({ key, label }) => {
           const isActive = activeCategory === key;
@@ -62,7 +62,7 @@ export function CategoryNav({ activeCategory, onSelect }: CategoryNavProps) {
               : 'text-gn-gray border-transparent hover:text-gray-900'
           }`}
         >
-          Local
+          本地
         </button>
       </div>
     </nav>

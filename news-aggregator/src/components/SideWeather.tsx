@@ -94,7 +94,7 @@ export function SideWeather() {
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-1.5 text-sm font-medium text-gray-900">
           <MapPin className="w-4 h-4 text-gn-gray" />
-          {cityWeather ? `${displayed.location} weather` : 'Your local weather'}
+          {cityWeather ? `${displayed.location}天气` : '本地天气'}
         </div>
         <div className="flex items-center gap-1">
           {/* °C / °F 切换 */}
@@ -114,14 +114,14 @@ export function SideWeather() {
           </div>
           <button
             className="p-1 hover:bg-gray-100 rounded transition-colors"
-            aria-label="Previous location"
+            aria-label="上一个地点"
             onClick={() => step(-1)}
           >
             <ChevronLeft className="w-4 h-4 text-gn-gray" />
           </button>
           <button
             className="p-1 hover:bg-gray-100 rounded transition-colors"
-            aria-label="Next location"
+            aria-label="下一个地点"
             onClick={() => step(1)}
           >
             <ChevronRight className="w-4 h-4 text-gn-gray" />
@@ -173,12 +173,12 @@ export function SideWeather() {
 
       <div className="mt-3 pt-3 border-t border-gray-100">
         <a
-          href="https://www.google.com/search?q=weather"
+          href="https://www.weather.com.cn/"
           target="_blank"
           rel="noopener noreferrer"
           className="text-sm text-gn-blue hover:underline"
         >
-          Google Weather
+          查看详细天气
         </a>
       </div>
     </div>

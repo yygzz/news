@@ -14,9 +14,9 @@ function formatRelative(isoDate: string): string {
   const diffHours = Math.floor(diffMs / 3600000);
   const diffDays = Math.floor(diffMs / 86400000);
 
-  if (diffMinutes < 1) return 'Just now';
-  if (diffMinutes < 60) return `${diffMinutes} minute${diffMinutes === 1 ? '' : 's'} ago`;
-  if (diffHours < 24) return `${diffHours} hour${diffHours === 1 ? '' : 's'} ago`;
-  if (diffDays < 7) return `${diffDays} day${diffDays === 1 ? '' : 's'} ago`;
-  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  if (diffMinutes < 1) return '刚刚';
+  if (diffMinutes < 60) return `${diffMinutes} 分钟前`;
+  if (diffHours < 24) return `${diffHours} 小时前`;
+  if (diffDays < 7) return `${diffDays} 天前`;
+  return date.toLocaleDateString('zh-CN', { month: 'short', day: 'numeric' });
 }

@@ -13,7 +13,7 @@ export function Header({ searchValue, onSearchChange }: HeaderProps) {
     <header className="sticky top-0 z-50 bg-white border-b border-gn-border">
       <div className="flex items-center justify-between px-4 py-2 gap-4">
         <div className="flex items-center gap-2 min-w-fit">
-          <span className="text-xl font-semibold tracking-tight text-gn-blue">News</span>
+          <span className="text-xl font-semibold tracking-tight text-gn-blue">新闻</span>
         </div>
 
         <div
@@ -27,14 +27,14 @@ export function Header({ searchValue, onSearchChange }: HeaderProps) {
               type="text"
               value={searchValue}
               onChange={(event) => onSearchChange(event.target.value)}
-              placeholder="Search for topics, locations & sources"
+              placeholder="搜索主题、地点和资讯来源"
               className="w-full ml-3 bg-transparent outline-none text-sm text-gray-900 placeholder-gray-500"
             />
             {searchValue && (
               <button
                 onClick={() => onSearchChange('')}
                 className="p-1 rounded-full hover:bg-gray-200 flex-shrink-0"
-                aria-label="Clear search"
+                aria-label="清除搜索"
               >
                 <X className="w-4 h-4 text-gn-gray" />
               </button>
@@ -46,19 +46,19 @@ export function Header({ searchValue, onSearchChange }: HeaderProps) {
           <button
             className="md:hidden p-2 rounded-full hover:bg-gray-100"
             onClick={() => setSearchOpen((v) => !v)}
-            aria-label="Toggle search"
+            aria-label="切换搜索"
           >
             <Search className="w-5 h-5 text-gn-gray" />
           </button>
-          <button className="p-2 rounded-full hover:bg-gray-100" aria-label="Help">
+          <button className="p-2 rounded-full hover:bg-gray-100" aria-label="帮助">
             <HelpCircle className="w-5 h-5 text-gn-gray" />
           </button>
-          <button className="p-2 rounded-full hover:bg-gray-100" aria-label="Settings">
+          <button className="p-2 rounded-full hover:bg-gray-100" aria-label="设置">
             <Settings className="w-5 h-5 text-gn-gray" />
           </button>
           <button
             className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-sm font-medium"
-            aria-label="User profile"
+            aria-label="用户资料"
           >
             <User className="w-5 h-5" />
           </button>

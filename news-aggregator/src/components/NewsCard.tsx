@@ -47,8 +47,8 @@ export const NewsCard = memo(function NewsCard({ item, variant = 'default', inde
       className={`p-0.5 -m-0.5 rounded-full hover:bg-gray-200 transition-colors flex-shrink-0 ${
         followed ? 'text-gn-blue' : 'text-gn-gray opacity-0 group-hover:opacity-100 focus:opacity-100'
       }`}
-      aria-label={followed ? `Unfollow ${item.source}` : `Follow ${item.source}`}
-      title={followed ? `Unfollow ${item.source}` : `Follow ${item.source}`}
+      aria-label={followed ? `取消关注 ${item.source}` : `关注 ${item.source}`}
+      title={followed ? `取消关注 ${item.source}` : `关注 ${item.source}`}
     >
       {followed ? <Check className={iconSize} /> : <Plus className={iconSize} />}
     </button>

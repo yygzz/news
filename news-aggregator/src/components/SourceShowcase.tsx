@@ -14,9 +14,9 @@ interface SourceShowcaseProps {
 export function SourceShowcase({ sources, onSelect }: SourceShowcaseProps) {
   return (
     <section>
-      <h2 className="text-xl font-bold text-gray-900 mb-4">News Showcase</h2>
+      <h2 className="text-xl font-bold text-gray-900 mb-4">来源一览</h2>
       <p className="text-sm text-gn-gray mb-4">
-        Browse every source in today&apos;s feed. Select one to read its stories.
+        浏览今日资讯的全部来源，选择一个查看其内容。
       </p>
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
         {sources.map((source) => (
@@ -30,7 +30,7 @@ export function SourceShowcase({ sources, onSelect }: SourceShowcaseProps) {
               {source.name}
             </span>
             <span className="text-xs text-gn-gray">
-              {source.count} {source.count === 1 ? 'story' : 'stories'}
+              {source.count} 条
             </span>
           </button>
         ))}

@@ -35,7 +35,7 @@ export function NewsList({ title, items, loading, emptyMessage }: NewsListProps)
   }
 
   if (items.length === 0) {
-    return <EmptyState message={emptyMessage ?? `No stories available in ${title}.`} />;
+    return <EmptyState message={emptyMessage ?? `「${title}」暂无内容。`} />;
   }
 
   // 只渲染前 visibleCount 条，减少首屏 DOM 节点与 favicon/缩略图请求数。
@@ -55,7 +55,7 @@ export function NewsList({ title, items, loading, emptyMessage }: NewsListProps)
           onClick={() => setVisibleCount((n) => n + PAGE_SIZE)}
           className="mt-5 w-full py-2.5 bg-gn-bg hover:bg-gray-200 rounded-lg text-sm font-medium text-gn-gray transition-colors"
         >
-          Show more ({items.length - visibleCount} remaining)
+          加载更多（剩余 {items.length - visibleCount} 条）
         </button>
       )}
     </section>

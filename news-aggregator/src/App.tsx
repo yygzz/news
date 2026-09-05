@@ -111,9 +111,9 @@ function AppContent() {
       );
       return (
         <NewsList
-          title={`Search results for "${searchQuery.trim()}"`}
+          title={`“${searchQuery.trim()}”的搜索结果`}
           items={sortByDate(matched)}
-          emptyMessage={`No stories matched "${searchQuery.trim()}". Try another keyword.`}
+          emptyMessage={`没有与“${searchQuery.trim()}”匹配的资讯，请尝试其他关键词。`}
         />
       );
     }
@@ -123,9 +123,9 @@ function AppContent() {
       const name = matched[0]?.source ?? sourceFilter;
       return (
         <NewsList
-          title={`Stories from ${name}`}
+          title={`${name} 的资讯`}
           items={sortByDate(matched)}
-          emptyMessage={`No stories from ${name} in today's feed.`}
+          emptyMessage={`今日资讯源中没有来自 ${name} 的内容。`}
         />
       );
     }
@@ -139,7 +139,7 @@ function AppContent() {
           <>
             <DateHeader lastUpdated={data.lastUpdated} />
             <TopStories stories={data.topStories} moreStories={data.categories.top.slice(5)} />
-            <NewsList title="Latest stories" items={latest} />
+            <NewsList title="最新资讯" items={latest} />
             <div className="lg:hidden mt-6">
               <SidePicks items={data.picksForYou} />
             </div>
@@ -149,9 +149,9 @@ function AppContent() {
       case 'for-you':
         return (
           <NewsList
-            title="Picks for you"
+            title="为您推荐"
             items={data.picksForYou}
-            emptyMessage="No personalized picks available yet."
+            emptyMessage="暂无个性化推荐内容。"
           />
         );
       case 'following': {
@@ -160,21 +160,21 @@ function AppContent() {
         );
         return (
           <NewsList
-            title="Following"
+            title="关注"
             items={followedItems}
-            emptyMessage="You are not following any sources yet. Hover over a story and use the + button next to its source name to follow it."
+            emptyMessage="您还没有关注任何资讯源。将鼠标悬停在新闻上，点击来源名称旁的 + 按钮即可关注。"
           />
         );
       }
       case 'showcase':
         return <SourceShowcase sources={sources} onSelect={setSourceFilter} />;
       case 'local':
-        return <EmptyState message="Local news is not available in this feed yet." />;
+        return <EmptyState message="该资讯源暂不支持本地新闻。" />;
       default: {
         const category: NewsCategory = view;
         return (
           <NewsList
-            title={`${CATEGORY_MAP[category]} news`}
+            title={`${CATEGORY_MAP[category]}资讯`}
             items={data.categories[category] ?? []}
           />
         );
