@@ -1,7 +1,12 @@
-import type { NewsCategory } from '../types';
+import type { MainView, NewsCategory } from '../types';
 
 export const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true';
-export const NEWS_DATA_URL = import.meta.env.VITE_NEWS_DATA_URL as string;
+
+const RAW_NEWS_DATA_URL = (import.meta.env.VITE_NEWS_DATA_URL as string | undefined) ?? 'data/news.json';
+const BASE_URL = (import.meta.env.BASE_URL as string | undefined) ?? '/';
+export const NEWS_DATA_URL = RAW_NEWS_DATA_URL.startsWith('http')
+  ? RAW_NEWS_DATA_URL
+  : `${BASE_URL}${RAW_NEWS_DATA_URL.replace(/^\/+/, '')}`;
 
 export const CATEGORY_MAP: Record<NewsCategory, string> = {
   top: 'Top stories',
@@ -24,4 +29,9 @@ export const NAV_CATEGORIES: { key: NewsCategory; label: string }[] = [
   { key: 'health', label: 'Health' },
 ];
 
-export const PERSONAL_NAV = ['Home', 'For you', 'Following', 'News Showcase'];
+export const PERSONAL_NAV: { key: MainView; label: string }[] = [
+  { key: 'home', label: 'Home' },
+  { key: 'for-you', label: 'For you' },
+  { key: 'following', label: 'Following' },
+  { key: 'showcase', label: 'News Showcase' },
+];

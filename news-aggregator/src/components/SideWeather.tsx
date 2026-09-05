@@ -1,5 +1,8 @@
 import { ChevronLeft, ChevronRight, Cloud, CloudRain, MapPin, Snowflake, Sun } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { useWeather } from '../hooks/useWeather';
+import { fetchWeatherByCity, PRESET_CITIES } from '../services/weatherService';
+import type { WeatherData } from '../types';
 import { SkeletonCard } from './SkeletonCard';
 
 function weatherIcon(code: number) {
@@ -16,8 +19,42 @@ function weatherIcon(code: number) {
 
 export function SideWeather() {
   const { weather, loading } = useWeather();
+  const [cityIndex, setCityIndex] = useState<number | null>(null);
+  const [cityWeather, setCityWeather] = useState<WeatherData | null>(null);
+  const [cityLoading, setCityLoading] = useState(false);
 
-  if (loading) {
+  useEffect(() => {
+    if (cityIndex === null) return;
+    let cancelled = false;
+    setCityLoading(true);
+    fetchWeatherByCity(PRESET_CITIES[cityIndex])
+      .then((data) => {
+        if (!cancelled) {
+          setCityWeather(data);
+          setCityLoading(false);
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setCityLoading(false);
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [cityIndex]);
+
+  const step = (delta: number) => {
+    setCityIndex((current) => {
+      const base = current === null ? (delta > 0 ? -1 : 0) : current;
+      return (base + delta + PRESET_CITIES.length) % PRESET_CITIES.length;
+    });
+  };
+
+  const displayed = cityWeather ?? weather;
+  const isLoading = loading || (cityLoading && !cityWeather);
+
+  if (isLoading) {
     return (
       <div className="bg-white rounded-xl border border-gn-border p-4 mb-6">
         <SkeletonCard />
@@ -30,25 +67,33 @@ export function SideWeather() {
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-1.5 text-sm font-medium text-gray-900">
           <MapPin className="w-4 h-4 text-gn-gray" />
-          Your local weather
+          {cityWeather ? `${displayed.location} weather` : 'Your local weather'}
         </div>
         <div className="flex gap-1">
-          <button className="p-1 hover:bg-gray-100 rounded" aria-label="Previous location">
+          <button
+            className="p-1 hover:bg-gray-100 rounded"
+            aria-label="Previous location"
+            onClick={() => step(-1)}
+          >
             <ChevronLeft className="w-4 h-4 text-gn-gray" />
           </button>
-          <button className="p-1 hover:bg-gray-100 rounded" aria-label="Next location">
+          <button
+            className="p-1 hover:bg-gray-100 rounded"
+            aria-label="Next location"
+            onClick={() => step(1)}
+          >
             <ChevronRight className="w-4 h-4 text-gn-gray" />
           </button>
         </div>
       </div>
 
       <div className="flex items-center gap-4">
-        {weatherIcon(weather.weatherCode)}
+        {weatherIcon(displayed.weatherCode)}
         <div>
           <div className="text-3xl font-normal text-gray-900">
-            {Math.round(weather.temperature)}°C
+            {Math.round(displayed.temperature)}°C
           </div>
-          <div className="text-sm text-gn-gray">{weather.location}</div>
+          <div className="text-sm text-gn-gray">{displayed.location}</div>
         </div>
       </div>
 

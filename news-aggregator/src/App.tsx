@@ -1,19 +1,70 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { CategoryNav } from './components/CategoryNav';
 import { DateHeader } from './components/DateHeader';
-import { ErrorState } from './components/ErrorState';
+import { EmptyState, ErrorState } from './components/ErrorState';
 import { Header } from './components/Header';
 import { NewsList } from './components/NewsList';
 import { SidePicks } from './components/SidePicks';
 import { SideWeather } from './components/SideWeather';
 import { SkeletonCard, SkeletonListItem } from './components/SkeletonCard';
+import { SourceShowcase } from './components/SourceShowcase';
+import type { SourceInfo } from './components/SourceShowcase';
 import { TopStories } from './components/TopStories';
+import { FollowProvider, useFollow } from './context/FollowContext';
 import { useNews } from './hooks/useNews';
-import type { NewsCategory } from './types';
+import { CATEGORY_MAP } from './services/config';
+import type { MainView, NewsCategory, NewsItem } from './types';
 
-function App() {
-  const [activeCategory, setActiveCategory] = useState<NewsCategory | 'home'>('home');
+function sortByDate(items: NewsItem[]): NewsItem[] {
+  return [...items].sort(
+    (a, b) => new Date(b.pubDate).getTime() - new Date(a.pubDate).getTime()
+  );
+}
+
+function AppContent() {
+  const [view, setView] = useState<MainView>('home');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [sourceFilter, setSourceFilter] = useState<string | null>(null);
   const { data, loading, error, refetch } = useNews();
+  const { followed } = useFollow();
+
+  const allItems = useMemo<NewsItem[]>(() => {
+    if (!data) return [];
+    const seen = new Set<string>();
+    const out: NewsItem[] = [];
+    const push = (item: NewsItem) => {
+      if (!seen.has(item.id)) {
+        seen.add(item.id);
+        out.push(item);
+      }
+    };
+    Object.values(data.categories).forEach((list) => list.forEach(push));
+    data.topStories.forEach(push);
+    data.picksForYou.forEach(push);
+    return out;
+  }, [data]);
+
+  const sources = useMemo<SourceInfo[]>(() => {
+    const map = new Map<string, SourceInfo>();
+    allItems.forEach((item) => {
+      const entry = map.get(item.sourceUrl) ?? {
+        domain: item.sourceUrl,
+        name: item.source,
+        count: 0,
+      };
+      entry.count += 1;
+      map.set(item.sourceUrl, entry);
+    });
+    return [...map.values()].sort((a, b) => b.count - a.count);
+  }, [allItems]);
+
+  const query = searchQuery.trim().toLowerCase();
+
+  const handleSelectView = (next: MainView) => {
+    setView(next);
+    setSourceFilter(null);
+    setSearchQuery('');
+  };
 
   const renderMainContent = () => {
     if (error) {
@@ -51,25 +102,85 @@ function App() {
       );
     }
 
-    if (activeCategory === 'home') {
+    if (query) {
+      const matched = allItems.filter(
+        (item) =>
+          item.title.toLowerCase().includes(query) ||
+          item.source.toLowerCase().includes(query) ||
+          item.contentSnippet.toLowerCase().includes(query)
+      );
       return (
-        <>
-          <DateHeader />
-          <TopStories stories={data.topStories} />
-          <div className="lg:hidden">
-            <SidePicks items={data.picksForYou} />
-          </div>
-        </>
+        <NewsList
+          title={`Search results for "${searchQuery.trim()}"`}
+          items={sortByDate(matched)}
+          emptyMessage={`No stories matched "${searchQuery.trim()}". Try another keyword.`}
+        />
       );
     }
 
-    return <NewsList category={activeCategory} items={data.categories[activeCategory] ?? []} />;
+    if (sourceFilter) {
+      const matched = allItems.filter((item) => item.sourceUrl === sourceFilter);
+      const name = matched[0]?.source ?? sourceFilter;
+      return (
+        <NewsList
+          title={`Stories from ${name}`}
+          items={sortByDate(matched)}
+          emptyMessage={`No stories from ${name} in today's feed.`}
+        />
+      );
+    }
+
+    switch (view) {
+      case 'home':
+        return (
+          <>
+            <DateHeader lastUpdated={data.lastUpdated} />
+            <TopStories stories={data.topStories} moreStories={data.categories.top.slice(5)} />
+            <div className="lg:hidden">
+              <SidePicks items={data.picksForYou} />
+            </div>
+          </>
+        );
+      case 'for-you':
+        return (
+          <NewsList
+            title="Picks for you"
+            items={data.picksForYou}
+            emptyMessage="No personalized picks available yet."
+          />
+        );
+      case 'following': {
+        const followedItems = sortByDate(
+          allItems.filter((item) => followed.includes(item.sourceUrl))
+        );
+        return (
+          <NewsList
+            title="Following"
+            items={followedItems}
+            emptyMessage="You are not following any sources yet. Hover over a story and use the + button next to its source name to follow it."
+          />
+        );
+      }
+      case 'showcase':
+        return <SourceShowcase sources={sources} onSelect={setSourceFilter} />;
+      case 'local':
+        return <EmptyState message="Local news is not available in this feed yet." />;
+      default: {
+        const category: NewsCategory = view;
+        return (
+          <NewsList
+            title={`${CATEGORY_MAP[category]} news`}
+            items={data.categories[category] ?? []}
+          />
+        );
+      }
+    }
   };
 
   return (
     <div className="min-h-screen bg-white">
-      <Header />
-      <CategoryNav activeCategory={activeCategory} onSelect={setActiveCategory} />
+      <Header searchValue={searchQuery} onSearchChange={setSearchQuery} />
+      <CategoryNav activeCategory={view} onSelect={handleSelectView} />
       <main className="max-w-[1200px] mx-auto px-4 py-6">
         <div className="flex flex-col lg:flex-row gap-6">
           <div className="lg:w-2/3">{renderMainContent()}</div>
@@ -88,6 +199,14 @@ function App() {
         </div>
       </main>
     </div>
+  );
+}
+
+function App() {
+  return (
+    <FollowProvider>
+      <AppContent />
+    </FollowProvider>
   );
 }
 

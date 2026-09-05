@@ -8,6 +8,8 @@ export type NewsCategory =
   | 'science'
   | 'health';
 
+export type MainView = NewsCategory | 'home' | 'for-you' | 'following' | 'showcase' | 'local';
+
 export interface NewsItem {
   id: string;
   title: string;

@@ -1,7 +1,12 @@
-import { HelpCircle, Search, Settings, User } from 'lucide-react';
+import { HelpCircle, Search, Settings, User, X } from 'lucide-react';
 import { useState } from 'react';
 
-export function Header() {
+interface HeaderProps {
+  searchValue: string;
+  onSearchChange: (value: string) => void;
+}
+
+export function Header({ searchValue, onSearchChange }: HeaderProps) {
   const [searchOpen, setSearchOpen] = useState(false);
 
   return (
@@ -20,9 +25,20 @@ export function Header() {
             <Search className="w-5 h-5 text-gn-gray flex-shrink-0" />
             <input
               type="text"
+              value={searchValue}
+              onChange={(event) => onSearchChange(event.target.value)}
               placeholder="Search for topics, locations & sources"
               className="w-full ml-3 bg-transparent outline-none text-sm text-gray-900 placeholder-gray-500"
             />
+            {searchValue && (
+              <button
+                onClick={() => onSearchChange('')}
+                className="p-1 rounded-full hover:bg-gray-200 flex-shrink-0"
+                aria-label="Clear search"
+              >
+                <X className="w-4 h-4 text-gn-gray" />
+              </button>
+            )}
           </div>
         </div>
 
