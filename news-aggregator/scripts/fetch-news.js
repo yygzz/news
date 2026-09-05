@@ -12,7 +12,7 @@ const __dirname = path.dirname(__filename);
 const SOURCE_FEEDS = {
   top: [
     { url: 'https://feeds.bbci.co.uk/news/rss.xml', source: 'BBC News' },
-    { url: 'http://rss.cnn.com/rss/edition.rss', source: 'CNN' },
+    { url: 'https://rss.cnn.com/rss/edition.rss', source: 'CNN' },
     { url: 'https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml', source: 'The New York Times' },
     { url: 'https://www.aljazeera.com/xml/rss/all.xml', source: 'Al Jazeera' },
   ],
@@ -20,14 +20,14 @@ const SOURCE_FEEDS = {
     { url: 'https://feeds.bbci.co.uk/news/world/rss.xml', source: 'BBC News' },
     { url: 'https://www.theguardian.com/world/rss', source: 'The Guardian' },
     { url: 'https://rss.nytimes.com/services/xml/rss/nyt/World.xml', source: 'The New York Times' },
-    { url: 'http://rss.cnn.com/rss/edition_world.rss', source: 'CNN' },
+    { url: 'https://rss.cnn.com/rss/edition_world.rss', source: 'CNN' },
     { url: 'https://www.aljazeera.com/xml/rss/all.xml', source: 'Al Jazeera' },
   ],
   business: [
     { url: 'https://feeds.bbci.co.uk/news/business/rss.xml', source: 'BBC News' },
     { url: 'https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=100003114', source: 'CNBC' },
     { url: 'https://www.theguardian.com/uk/business/rss', source: 'The Guardian' },
-    { url: 'https://fortune.com/feed/feed.xml', source: 'Fortune' },
+    { url: 'https://rss.nytimes.com/services/xml/rss/nyt/Business.xml', source: 'The New York Times' },
   ],
   technology: [
     { url: 'https://feeds.bbci.co.uk/news/technology/rss.xml', source: 'BBC News' },
@@ -44,20 +44,20 @@ const SOURCE_FEEDS = {
   ],
   sports: [
     { url: 'https://feeds.bbci.co.uk/sport/rss.xml', source: 'BBC Sport' },
-    { url: 'https://www.espn.com/espn/rss/news', source: 'ESPN' },
+    { url: 'https://www.cbssports.com/rss/headlines/', source: 'CBS Sports' },
     { url: 'https://www.skysports.com/rss/12040', source: 'Sky Sports' },
     { url: 'https://www.theguardian.com/sport/rss', source: 'The Guardian' },
   ],
   science: [
     { url: 'https://feeds.bbci.co.uk/news/science_and_environment/rss.xml', source: 'BBC News' },
-    { url: 'https://www.nature.com/nature.rss', source: 'Nature' },
+    { url: 'https://phys.org/rss-feed/', source: 'Phys.org' },
     { url: 'https://www.sciencedaily.com/rss/all.xml', source: 'ScienceDaily' },
     { url: 'https://www.newscientist.com/feed/home/', source: 'New Scientist' },
   ],
   health: [
     { url: 'https://feeds.bbci.co.uk/news/health/rss.xml', source: 'BBC News' },
     { url: 'https://www.who.int/rss-feeds/news-english.xml', source: 'WHO' },
-    { url: 'https://www.medicalnewstoday.com/rss/all.xml', source: 'Medical News Today' },
+    { url: 'https://www.nih.gov/news-events/news-releases/rss.xml', source: 'NIH' },
     { url: 'https://www.theguardian.com/society/health/rss', source: 'The Guardian' },
   ],
 };
@@ -65,6 +65,7 @@ const SOURCE_FEEDS = {
 const REQUEST_TIMEOUT_MS = 10000;
 const MAX_RETRIES = 3;
 const ITEMS_PER_CATEGORY = 15;
+const PER_SOURCE_CAP = 6;
 
 function hashId(link) {
   return crypto.createHash('md5').update(link).digest('hex');
@@ -92,7 +93,14 @@ function fetchWithRetry(url, retries = MAX_RETRIES) {
         },
         (res) => {
           if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
-            fetchWithRetry(res.headers.location, remaining)
+            let nextUrl;
+            try {
+              nextUrl = new URL(res.headers.location, url).toString();
+            } catch {
+              reject(new Error(`Invalid redirect from ${url}`));
+              return;
+            }
+            fetchWithRetry(nextUrl, remaining)
               .then(resolve)
               .catch(reject);
             return;
@@ -153,13 +161,26 @@ function textOf(value) {
   return String(value);
 }
 
-function stripHtml(html) {
-  return html
-    .replace(/<[^>]*>/g, ' ')
+function decodeEntities(text) {
+  return text
+    .replace(/&#x([0-9a-fA-F]+);/g, (_, hex) => {
+      const code = parseInt(hex, 16);
+      return code >= 32 && code <= 0x10ffff ? String.fromCodePoint(code) : ' ';
+    })
+    .replace(/&#(\d+);/g, (_, dec) => {
+      const code = parseInt(dec, 10);
+      return code >= 32 && code <= 0x10ffff ? String.fromCodePoint(code) : ' ';
+    })
     .replace(/&nbsp;/g, ' ')
     .replace(/&amp;/g, '&')
     .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
+    .replace(/&apos;/g, "'")
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>');
+}
+
+function stripHtml(html) {
+  return decodeEntities(html.replace(/<[^>]*>/g, ' '))
     .replace(/\s+/g, ' ')
     .trim();
 }
@@ -283,7 +304,29 @@ async function fetchCategory(category, feeds) {
     }
   }
   merged.sort((a, b) => new Date(b.pubDate).getTime() - new Date(a.pubDate).getTime());
-  return merged.slice(0, ITEMS_PER_CATEGORY);
+
+  const counts = new Map();
+  const capped = [];
+  for (const item of merged) {
+    const used = counts.get(item.source) ?? 0;
+    if (used < PER_SOURCE_CAP) {
+      counts.set(item.source, used + 1);
+      capped.push(item);
+    }
+  }
+
+  const selected = capped.slice(0, ITEMS_PER_CATEGORY);
+  if (selected.length < ITEMS_PER_CATEGORY) {
+    const ids = new Set(selected.map((item) => item.id));
+    for (const item of merged) {
+      if (selected.length >= ITEMS_PER_CATEGORY) break;
+      if (!ids.has(item.id)) {
+        ids.add(item.id);
+        selected.push(item);
+      }
+    }
+  }
+  return selected;
 }
 
 async function main() {
