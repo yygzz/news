@@ -6,7 +6,8 @@ defaults:
 
 on:
   schedule:
-    - cron: '0 */2 * * *'
+    # 06:00 / 12:00 / 18:00 Beijing time (UTC+8); GitHub cron runs on UTC
+    - cron: '0 4,10,22 * * *'
   push:
     branches: [main]
   workflow_dispatch:

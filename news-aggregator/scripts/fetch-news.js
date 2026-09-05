@@ -8,15 +8,58 @@ import { XMLParser } from 'fast-xml-parser';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const RSS_FEEDS = {
-  top: 'https://news.google.com/rss?hl=en-US&gl=US&ceid=US:en',
-  world: 'https://news.google.com/rss/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNRFZxYUdjU0FtVnVHZ0pWVXlnQVAB?hl=en-US&gl=US&ceid=US:en',
-  business: 'https://news.google.com/rss/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNRGx6TVdZU0FtVnVHZ0pWVXlnQVAB?hl=en-US&gl=US&ceid=US:en',
-  technology: 'https://news.google.com/rss/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNRGRqTVhZU0FtVnVHZ0pWVXlnQVAB?hl=en-US&gl=US&ceid=US:en',
-  entertainment: 'https://news.google.com/rss/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNREpxYW5RU0FtVnVHZ0pWVXlnQVAB?hl=en-US&gl=US&ceid=US:en',
-  sports: 'https://news.google.com/rss/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNRFp1ZEdvU0FtVnVHZ0pWVXlnQVAB?hl=en-US&gl=US&ceid=US:en',
-  science: 'https://news.google.com/rss/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNRFp0Y1RjU0FtVnVHZ0pWVXlnQVAB?hl=en-US&gl=US&ceid=US:en',
-  health: 'https://news.google.com/rss/topics/CAAqIQgKIhtDQkFTRGdvSUwyMHZNR3QwTlRFU0FtVnVLQUFQAQ?hl=en-US&gl=US&ceid=US:en',
+// Direct publisher feeds (RSS 2.0 and Atom), grouped by category.
+const SOURCE_FEEDS = {
+  top: [
+    { url: 'https://feeds.bbci.co.uk/news/rss.xml', source: 'BBC News' },
+    { url: 'http://rss.cnn.com/rss/edition.rss', source: 'CNN' },
+    { url: 'https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml', source: 'The New York Times' },
+    { url: 'https://www.aljazeera.com/xml/rss/all.xml', source: 'Al Jazeera' },
+  ],
+  world: [
+    { url: 'https://feeds.bbci.co.uk/news/world/rss.xml', source: 'BBC News' },
+    { url: 'https://www.theguardian.com/world/rss', source: 'The Guardian' },
+    { url: 'https://rss.nytimes.com/services/xml/rss/nyt/World.xml', source: 'The New York Times' },
+    { url: 'http://rss.cnn.com/rss/edition_world.rss', source: 'CNN' },
+    { url: 'https://www.aljazeera.com/xml/rss/all.xml', source: 'Al Jazeera' },
+  ],
+  business: [
+    { url: 'https://feeds.bbci.co.uk/news/business/rss.xml', source: 'BBC News' },
+    { url: 'https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=100003114', source: 'CNBC' },
+    { url: 'https://www.theguardian.com/uk/business/rss', source: 'The Guardian' },
+    { url: 'https://fortune.com/feed/feed.xml', source: 'Fortune' },
+  ],
+  technology: [
+    { url: 'https://feeds.bbci.co.uk/news/technology/rss.xml', source: 'BBC News' },
+    { url: 'https://www.theverge.com/rss/index.xml', source: 'The Verge' },
+    { url: 'https://techcrunch.com/feed/', source: 'TechCrunch' },
+    { url: 'https://feeds.arstechnica.com/arstechnica/technology-lab', source: 'Ars Technica' },
+    { url: 'https://www.wired.com/feed/rss', source: 'Wired' },
+  ],
+  entertainment: [
+    { url: 'https://feeds.bbci.co.uk/news/entertainment_and_arts/rss.xml', source: 'BBC News' },
+    { url: 'https://variety.com/feed/', source: 'Variety' },
+    { url: 'https://www.hollywoodreporter.com/feed/', source: 'The Hollywood Reporter' },
+    { url: 'https://www.theguardian.com/culture/rss', source: 'The Guardian' },
+  ],
+  sports: [
+    { url: 'https://feeds.bbci.co.uk/sport/rss.xml', source: 'BBC Sport' },
+    { url: 'https://www.espn.com/espn/rss/news', source: 'ESPN' },
+    { url: 'https://www.skysports.com/rss/12040', source: 'Sky Sports' },
+    { url: 'https://www.theguardian.com/sport/rss', source: 'The Guardian' },
+  ],
+  science: [
+    { url: 'https://feeds.bbci.co.uk/news/science_and_environment/rss.xml', source: 'BBC News' },
+    { url: 'https://www.nature.com/nature.rss', source: 'Nature' },
+    { url: 'https://www.sciencedaily.com/rss/all.xml', source: 'ScienceDaily' },
+    { url: 'https://www.newscientist.com/feed/home/', source: 'New Scientist' },
+  ],
+  health: [
+    { url: 'https://feeds.bbci.co.uk/news/health/rss.xml', source: 'BBC News' },
+    { url: 'https://www.who.int/rss-feeds/news-english.xml', source: 'WHO' },
+    { url: 'https://www.medicalnewstoday.com/rss/all.xml', source: 'Medical News Today' },
+    { url: 'https://www.theguardian.com/society/health/rss', source: 'The Guardian' },
+  ],
 };
 
 const REQUEST_TIMEOUT_MS = 10000;
@@ -72,7 +115,7 @@ function fetchWithRetry(url, retries = MAX_RETRIES) {
             data += chunk;
           });
           res.on('end', () => resolve(data));
-        }
+        },
       );
 
       req.on('timeout', () => {
@@ -87,7 +130,7 @@ function fetchWithRetry(url, retries = MAX_RETRIES) {
 
       req.on('error', (err) => {
         if (remaining > 0) {
-          console.warn(`Error fetching ${url}, retrying (${remaining} attempts left): ${err.message}`);
+          console.warn(`Error fetching ${url}, retrying (${remaining} attempts left)`);
           setTimeout(() => attempt(remaining - 1), 1000);
         } else {
           reject(err);
@@ -99,57 +142,158 @@ function fetchWithRetry(url, retries = MAX_RETRIES) {
   });
 }
 
-function parseItems(xmlText, category) {
+function textOf(value) {
+  if (value == null) return '';
+  if (typeof value === 'string') return value;
+  if (Array.isArray(value)) return textOf(value[0]);
+  if (typeof value === 'object') {
+    if (typeof value['#text'] === 'string') return value['#text'];
+    if (typeof value._ === 'string') return value._;
+  }
+  return String(value);
+}
+
+function stripHtml(html) {
+  return html
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function pickLink(item) {
+  const link = item.link;
+  if (typeof link === 'string') return link.trim();
+  if (Array.isArray(link)) {
+    const alternate = link.find(
+      (entry) => typeof entry === 'object' && entry !== null && (entry['@_rel'] === 'alternate' || !entry['@_rel']),
+    );
+    const chosen = alternate ?? link[0];
+    if (typeof chosen === 'object' && chosen !== null) return String(chosen['@_href'] ?? '').trim();
+    return String(chosen ?? '').trim();
+  }
+  if (link && typeof link === 'object') return String(link['@_href'] ?? textOf(link)).trim();
+  return '';
+}
+
+function pickThumbnail(item) {
+  const mediaContent = item['media:content'];
+  const contentList = Array.isArray(mediaContent) ? mediaContent : mediaContent ? [mediaContent] : [];
+  for (const media of contentList) {
+    if (media && media['@_url'] && (!media['@_medium'] || media['@_medium'] === 'image')) {
+      return media['@_url'];
+    }
+  }
+
+  const mediaThumbnail = item['media:thumbnail'];
+  const thumbList = Array.isArray(mediaThumbnail) ? mediaThumbnail : mediaThumbnail ? [mediaThumbnail] : [];
+  if (thumbList[0] && thumbList[0]['@_url']) return thumbList[0]['@_url'];
+
+  const enclosure = item.enclosure;
+  const enclosures = Array.isArray(enclosure) ? enclosure : enclosure ? [enclosure] : [];
+  for (const enc of enclosures) {
+    if (enc && enc['@_url'] && typeof enc['@_type'] === 'string' && enc['@_type'].startsWith('image')) {
+      return enc['@_url'];
+    }
+  }
+
+  const html = `${textOf(item.description)} ${textOf(item.content)} ${textOf(item.summary)}`;
+  const match = html.match(/<img[^>]+src=["']([^"']+)["']/i);
+  return match ? match[1] : null;
+}
+
+function pickAuthors(item) {
+  const atomAuthor = item.author?.name ?? item.author;
+  const creator = item['dc:creator'];
+  const raw = atomAuthor ?? creator;
+  const text = textOf(raw).trim();
+  return text ? [text] : undefined;
+}
+
+function getEntries(xmlText) {
   const parser = new XMLParser({
     ignoreAttributes: false,
     attributeNamePrefix: '@_',
   });
   const parsed = parser.parse(xmlText);
-  const channel = parsed?.rss?.channel ?? parsed?.feed ?? {};
-  const items = Array.isArray(channel.item) ? channel.item : channel.item ? [channel.item] : [];
+  const channel = parsed?.rss?.channel;
+  if (channel) {
+    const items = channel.item;
+    return Array.isArray(items) ? items : items ? [items] : [];
+  }
+  const entries = parsed?.feed?.entry;
+  if (entries) {
+    return Array.isArray(entries) ? entries : [entries];
+  }
+  return [];
+}
 
-  return items.slice(0, ITEMS_PER_CATEGORY).map((item) => {
-    const link = item.link ?? '';
-    const sourceText = item.source?.['#text'] ?? item.source?._ ?? '';
-    const source = sourceText || extractDomain(link);
-    const pubDateRaw = item.pubDate ?? item.published ?? new Date().toISOString();
+function parseFeed(xmlText, category, source) {
+  return getEntries(xmlText).map((item) => {
+    const link = pickLink(item);
+    const pubDateRaw = item.pubDate ?? item.published ?? item.updated ?? new Date().toISOString();
+    let pubDate;
+    try {
+      pubDate = new Date(pubDateRaw).toISOString();
+    } catch {
+      pubDate = new Date().toISOString();
+    }
 
     return {
       id: hashId(link),
-      title: item.title ?? '',
+      title: stripHtml(textOf(item.title)),
       link,
       source,
       sourceUrl: extractDomain(link),
-      pubDate: new Date(pubDateRaw).toISOString(),
-      contentSnippet: (item.description ?? '').substring(0, 150),
-      thumbnail: null,
+      pubDate,
+      contentSnippet: stripHtml(textOf(item.description) || textOf(item.summary) || textOf(item.content)).substring(0, 150),
+      thumbnail: pickThumbnail(item),
       category,
-      authors: undefined,
+      authors: pickAuthors(item),
     };
   });
 }
 
-async function fetchCategory(category, url) {
-  console.log(`Fetching ${category}...`);
-  const xml = await fetchWithRetry(url);
-  const items = parseItems(xml, category);
-  console.log(`Fetched ${items.length} items for ${category}`);
-  return items;
+async function fetchFeed(feed, category) {
+  try {
+    const xml = await fetchWithRetry(feed.url);
+    const items = parseFeed(xml, category, feed.source).filter((item) => item.link && item.title);
+    console.log(`Fetched ${items.length} items from ${feed.source} (${category})`);
+    return items;
+  } catch (err) {
+    console.error(`Failed to fetch ${feed.source} (${category}): ${err.message}`);
+    return [];
+  }
+}
+
+async function fetchCategory(category, feeds) {
+  console.log(`Fetching category ${category} from ${feeds.length} sources...`);
+  const results = await Promise.all(feeds.map((feed) => fetchFeed(feed, category)));
+  const seen = new Set();
+  const merged = [];
+  for (const items of results) {
+    for (const item of items) {
+      if (!seen.has(item.id)) {
+        seen.add(item.id);
+        merged.push(item);
+      }
+    }
+  }
+  merged.sort((a, b) => new Date(b.pubDate).getTime() - new Date(a.pubDate).getTime());
+  return merged.slice(0, ITEMS_PER_CATEGORY);
 }
 
 async function main() {
   const categories = {};
   const allItems = [];
 
-  for (const [category, url] of Object.entries(RSS_FEEDS)) {
-    try {
-      const items = await fetchCategory(category, url);
-      categories[category] = items;
-      allItems.push(...items);
-    } catch (err) {
-      console.error(`Failed to fetch ${category}: ${err.message}`);
-      categories[category] = [];
-    }
+  for (const [category, feeds] of Object.entries(SOURCE_FEEDS)) {
+    const items = await fetchCategory(category, feeds);
+    categories[category] = items;
+    allItems.push(...items);
   }
 
   const topStories = categories.top.slice(0, 5);
@@ -174,7 +318,12 @@ async function main() {
   const outputPath = path.join(outputDir, 'news.json');
   fs.writeFileSync(outputPath, JSON.stringify(output, null, 2));
 
-  console.log(`Wrote ${outputPath} with ${allItems.length} total items`);
+  const withThumbs = allItems.filter((item) => item.thumbnail).length;
+  console.log(`Wrote ${outputPath} with ${allItems.length} total items (${withThumbs} with thumbnails)`);
+  for (const [category, items] of Object.entries(categories)) {
+    const sources = [...new Set(items.map((item) => item.source))].join(', ');
+    console.log(`  ${category}: ${items.length} items [${sources}]`);
+  }
 }
 
 main().catch((err) => {
