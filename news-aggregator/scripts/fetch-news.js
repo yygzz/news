@@ -12,7 +12,7 @@ const __dirname = path.dirname(__filename);
 const SOURCE_FEEDS = {
   top: [
     { url: 'https://feeds.bbci.co.uk/news/rss.xml', source: 'BBC News' },
-    { url: 'https://rss.cnn.com/rss/edition.rss', source: 'CNN' },
+    { url: 'https://feeds.npr.org/1001/rss.xml', source: 'NPR' },
     { url: 'https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml', source: 'The New York Times' },
     { url: 'https://www.aljazeera.com/xml/rss/all.xml', source: 'Al Jazeera' },
   ],
@@ -20,7 +20,7 @@ const SOURCE_FEEDS = {
     { url: 'https://feeds.bbci.co.uk/news/world/rss.xml', source: 'BBC News' },
     { url: 'https://www.theguardian.com/world/rss', source: 'The Guardian' },
     { url: 'https://rss.nytimes.com/services/xml/rss/nyt/World.xml', source: 'The New York Times' },
-    { url: 'https://rss.cnn.com/rss/edition_world.rss', source: 'CNN' },
+    { url: 'https://www.france24.com/en/rss', source: 'France 24' },
     { url: 'https://www.aljazeera.com/xml/rss/all.xml', source: 'Al Jazeera' },
   ],
   business: [
@@ -57,7 +57,7 @@ const SOURCE_FEEDS = {
   health: [
     { url: 'https://feeds.bbci.co.uk/news/health/rss.xml', source: 'BBC News' },
     { url: 'https://www.who.int/rss-feeds/news-english.xml', source: 'WHO' },
-    { url: 'https://www.nih.gov/news-events/news-releases/rss.xml', source: 'NIH' },
+    { url: 'https://feeds.npr.org/1007/rss.xml', source: 'NPR' },
     { url: 'https://www.theguardian.com/society/health/rss', source: 'The Guardian' },
   ],
 };
