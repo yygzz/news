@@ -1,8 +1,13 @@
-import CryptoJS from 'crypto-js';
 import type { NewsCategory, NewsData, NewsItem } from '../types';
 
+// FNV-1a 32-bit hash — tiny local replacement for crypto-js MD5 (mock ids only).
 function hashId(link: string): string {
-  return CryptoJS.MD5(link).toString();
+  let hash = 0x811c9dc5;
+  for (let i = 0; i < link.length; i++) {
+    hash ^= link.charCodeAt(i);
+    hash = Math.imul(hash, 0x01000193);
+  }
+  return (hash >>> 0).toString(16).padStart(8, '0');
 }
 
 function hoursAgo(hours: number): string {
@@ -60,6 +65,7 @@ function item(
     thumbnail: placeholderThumbnail,
     category,
     authors,
+    vpnRequired: true,
   };
 }
 
@@ -625,6 +631,95 @@ const picksForYou: NewsItem[] = [
   ),
 ];
 
+const CHINA_SOURCES = {
+  kr36: { name: '36氪', domain: '36kr.com' },
+  sspai: { name: '少数派', domain: 'sspai.com' },
+  solidot: { name: 'Solidot', domain: 'solidot.org' },
+  ifanr: { name: '爱范儿', domain: 'ifanr.com' },
+  ftchinese: { name: 'FT中文网', domain: 'ftchinese.com' },
+};
+
+function chinaItem(
+  title: string,
+  link: string,
+  sourceKey: keyof typeof CHINA_SOURCES,
+  pubDate: string,
+  snippet: string
+): NewsItem {
+  const source = CHINA_SOURCES[sourceKey];
+  return {
+    id: hashId(link),
+    title,
+    link,
+    source: source.name,
+    sourceUrl: source.domain,
+    pubDate,
+    contentSnippet: snippet,
+    thumbnail: placeholderThumbnail,
+    category: 'china',
+    vpnRequired: false,
+  };
+}
+
+const china: NewsItem[] = [
+  chinaItem(
+    '国产大模型集中升级：推理能力与长上下文成竞争焦点',
+    'https://36kr.com/p/mock-001',
+    'kr36',
+    hoursAgo(1),
+    '多家厂商本周发布新版本模型，重点提升复杂推理、代码生成与百万级上下文处理能力，API 价格进一步下探。'
+  ),
+  chinaItem(
+    '新能源汽车 8 月交付量公布：头部品牌环比继续增长',
+    'https://36kr.com/p/mock-002',
+    'kr36',
+    hoursAgo(2),
+    '多家车企公布上月交付数据，纯电与增程双线并进，出口占比持续提升。'
+  ),
+  chinaItem(
+    '效率工具年度盘点：这些国产应用正在改变工作流',
+    'https://sspai.com/post/mock-001',
+    'sspai',
+    hoursAgo(3),
+    '从笔记、待办到自动化，本文梳理了今年值得关注的十余款效率工具及其典型用法。'
+  ),
+  chinaItem(
+    '手机影像横评：一英寸主摄之后还能卷什么',
+    'https://sspai.com/post/mock-002',
+    'sspai',
+    hoursAgo(5),
+    '长焦微距、可变光圈与计算摄影成为新战场，我们用一周时间对比了四款旗舰机型。'
+  ),
+  chinaItem(
+    '开源社区动态：多个国产基础软件项目进入 Apache 孵化器',
+    'https://www.solidot.org/story?sid=mock001',
+    'solidot',
+    hoursAgo(4),
+    '数据库、消息队列与云原生调度方向的三个项目本月先后进入 Apache 孵化器。'
+  ),
+  chinaItem(
+    '微信输入法更新：跨设备复制粘贴与 AI 改写上线',
+    'https://www.ifanr.com/mock-001',
+    'ifanr',
+    hoursAgo(6),
+    '新版本支持手机与电脑端剪贴板同步，并加入一键润色与翻译功能。'
+  ),
+  chinaItem(
+    '折叠屏笔记本体验：形态创新之外的实用性考问',
+    'https://www.ifanr.com/mock-002',
+    'ifanr',
+    hoursAgo(8),
+    '更大的展开屏幕带来多窗口优势，但重量、续航与耐用性仍是绕不开的话题。'
+  ),
+  chinaItem(
+    '全球经济观察：亚洲供应链重构中的中国角色',
+    'https://www.ftchinese.com/story/mock-001',
+    'ftchinese',
+    hoursAgo(3),
+    '从中间品贸易数据看，区域供应链正在经历一轮深度调整，高端制造环节韧性凸显。'
+  ),
+];
+
 export const mockNewsData: NewsData = {
   lastUpdated: new Date().toISOString(),
   categories: {
@@ -636,6 +731,7 @@ export const mockNewsData: NewsData = {
     sports,
     science,
     health,
+    china,
   },
   topStories,
   picksForYou,

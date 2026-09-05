@@ -9,63 +9,78 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Direct publisher feeds (RSS 2.0 and Atom), grouped by category.
+// `vpn: true` marks sources whose websites are not directly reachable from
+// mainland China; the UI shows a blue "VPN need" badge on those stories.
 const SOURCE_FEEDS = {
   top: [
-    { url: 'https://feeds.bbci.co.uk/news/rss.xml', source: 'BBC News' },
+    { url: 'https://feeds.bbci.co.uk/news/rss.xml', source: 'BBC News', vpn: true },
     { url: 'https://feeds.npr.org/1001/rss.xml', source: 'NPR' },
-    { url: 'https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml', source: 'The New York Times' },
-    { url: 'https://www.aljazeera.com/xml/rss/all.xml', source: 'Al Jazeera' },
+    { url: 'https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml', source: 'The New York Times', vpn: true },
+    { url: 'https://www.aljazeera.com/xml/rss/all.xml', source: 'Al Jazeera', vpn: true },
   ],
   world: [
-    { url: 'https://feeds.bbci.co.uk/news/world/rss.xml', source: 'BBC News' },
-    { url: 'https://www.theguardian.com/world/rss', source: 'The Guardian' },
-    { url: 'https://rss.nytimes.com/services/xml/rss/nyt/World.xml', source: 'The New York Times' },
-    { url: 'https://www.france24.com/en/rss', source: 'France 24' },
-    { url: 'https://www.aljazeera.com/xml/rss/all.xml', source: 'Al Jazeera' },
+    { url: 'https://feeds.bbci.co.uk/news/world/rss.xml', source: 'BBC News', vpn: true },
+    { url: 'https://www.theguardian.com/world/rss', source: 'The Guardian', vpn: true },
+    { url: 'https://rss.nytimes.com/services/xml/rss/nyt/World.xml', source: 'The New York Times', vpn: true },
+    { url: 'https://www.france24.com/en/rss', source: 'France 24', vpn: true },
+    { url: 'https://www.aljazeera.com/xml/rss/all.xml', source: 'Al Jazeera', vpn: true },
   ],
   business: [
-    { url: 'https://feeds.bbci.co.uk/news/business/rss.xml', source: 'BBC News' },
+    { url: 'https://feeds.bbci.co.uk/news/business/rss.xml', source: 'BBC News', vpn: true },
     { url: 'https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=100003114', source: 'CNBC' },
-    { url: 'https://www.theguardian.com/uk/business/rss', source: 'The Guardian' },
-    { url: 'https://rss.nytimes.com/services/xml/rss/nyt/Business.xml', source: 'The New York Times' },
+    { url: 'https://www.theguardian.com/uk/business/rss', source: 'The Guardian', vpn: true },
+    { url: 'https://rss.nytimes.com/services/xml/rss/nyt/Business.xml', source: 'The New York Times', vpn: true },
   ],
   technology: [
-    { url: 'https://feeds.bbci.co.uk/news/technology/rss.xml', source: 'BBC News' },
+    { url: 'https://feeds.bbci.co.uk/news/technology/rss.xml', source: 'BBC News', vpn: true },
     { url: 'https://www.theverge.com/rss/index.xml', source: 'The Verge' },
     { url: 'https://techcrunch.com/feed/', source: 'TechCrunch' },
     { url: 'https://feeds.arstechnica.com/arstechnica/technology-lab', source: 'Ars Technica' },
     { url: 'https://www.wired.com/feed/rss', source: 'Wired' },
   ],
   entertainment: [
-    { url: 'https://feeds.bbci.co.uk/news/entertainment_and_arts/rss.xml', source: 'BBC News' },
+    { url: 'https://feeds.bbci.co.uk/news/entertainment_and_arts/rss.xml', source: 'BBC News', vpn: true },
     { url: 'https://variety.com/feed/', source: 'Variety' },
     { url: 'https://www.hollywoodreporter.com/feed/', source: 'The Hollywood Reporter' },
-    { url: 'https://www.theguardian.com/culture/rss', source: 'The Guardian' },
+    { url: 'https://www.theguardian.com/culture/rss', source: 'The Guardian', vpn: true },
   ],
   sports: [
-    { url: 'https://feeds.bbci.co.uk/sport/rss.xml', source: 'BBC Sport' },
+    { url: 'https://feeds.bbci.co.uk/sport/rss.xml', source: 'BBC Sport', vpn: true },
     { url: 'https://www.cbssports.com/rss/headlines/', source: 'CBS Sports' },
     { url: 'https://www.skysports.com/rss/12040', source: 'Sky Sports' },
-    { url: 'https://www.theguardian.com/sport/rss', source: 'The Guardian' },
+    { url: 'https://www.theguardian.com/sport/rss', source: 'The Guardian', vpn: true },
   ],
   science: [
-    { url: 'https://feeds.bbci.co.uk/news/science_and_environment/rss.xml', source: 'BBC News' },
+    { url: 'https://feeds.bbci.co.uk/news/science_and_environment/rss.xml', source: 'BBC News', vpn: true },
     { url: 'https://phys.org/rss-feed/', source: 'Phys.org' },
     { url: 'https://www.sciencedaily.com/rss/all.xml', source: 'ScienceDaily' },
     { url: 'https://www.newscientist.com/feed/home/', source: 'New Scientist' },
   ],
   health: [
-    { url: 'https://feeds.bbci.co.uk/news/health/rss.xml', source: 'BBC News' },
+    { url: 'https://feeds.bbci.co.uk/news/health/rss.xml', source: 'BBC News', vpn: true },
     { url: 'https://www.who.int/rss-feeds/news-english.xml', source: 'WHO' },
     { url: 'https://feeds.npr.org/1007/rss.xml', source: 'NPR' },
-    { url: 'https://www.theguardian.com/society/health/rss', source: 'The Guardian' },
+    { url: 'https://www.theguardian.com/society/health/rss', source: 'The Guardian', vpn: true },
+  ],
+  // 国内可直接访问的中文源
+  china: [
+    { url: 'https://36kr.com/feed', source: '36氪' },
+    { url: 'https://sspai.com/feed', source: '少数派' },
+    { url: 'https://www.solidot.org/index.rss', source: 'Solidot' },
+    { url: 'https://www.ifanr.com/feed', source: '爱范儿' },
+    { url: 'https://www.ftchinese.com/rss/news', source: 'FT中文网' },
+    { url: 'https://feeds.bbci.co.uk/zhongwen/simp/rss.xml', source: 'BBC 中文', vpn: true },
   ],
 };
 
 const REQUEST_TIMEOUT_MS = 10000;
 const MAX_RETRIES = 3;
-const ITEMS_PER_CATEGORY = 15;
-const PER_SOURCE_CAP = 6;
+const ITEMS_PER_CATEGORY = 20;
+const PER_SOURCE_CAP = 8;
+const TOP_STORIES_COUNT = 5;
+const PICKS_COUNT = 8;
+const TRANSLATE_CONCURRENCY = 5;
+const TRANSLATE_MAX_CHARS = 800;
 
 function hashId(link) {
   return crypto.createHash('md5').update(link).digest('hex');
@@ -252,7 +267,7 @@ function getEntries(xmlText) {
   return [];
 }
 
-function parseFeed(xmlText, category, source) {
+function parseFeed(xmlText, category, source, vpnRequired) {
   return getEntries(xmlText).map((item) => {
     const link = pickLink(item);
     const pubDateRaw = item.pubDate ?? item.published ?? item.updated ?? new Date().toISOString();
@@ -274,6 +289,7 @@ function parseFeed(xmlText, category, source) {
       thumbnail: pickThumbnail(item),
       category,
       authors: pickAuthors(item),
+      vpnRequired: vpnRequired === true,
     };
   });
 }
@@ -281,7 +297,7 @@ function parseFeed(xmlText, category, source) {
 async function fetchFeed(feed, category) {
   try {
     const xml = await fetchWithRetry(feed.url);
-    const items = parseFeed(xml, category, feed.source).filter((item) => item.link && item.title);
+    const items = parseFeed(xml, category, feed.source, feed.vpn).filter((item) => item.link && item.title);
     console.log(`Fetched ${items.length} items from ${feed.source} (${category})`);
     return items;
   } catch (err) {
@@ -329,6 +345,57 @@ async function fetchCategory(category, feeds) {
   return selected;
 }
 
+function hasCJK(text) {
+  return /[一-鿿]/.test(text);
+}
+
+function fetchJson(url) {
+  return fetchWithRetry(url, 2).then((body) => JSON.parse(body));
+}
+
+// Translate a single string to Simplified Chinese via the free Google
+// Translate endpoint (no API key required, runs on GitHub Actions runners).
+async function translateText(text) {
+  if (!text || hasCJK(text)) return text;
+  const input = text.length > TRANSLATE_MAX_CHARS ? text.slice(0, TRANSLATE_MAX_CHARS) : text;
+  const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=zh-CN&dt=t&q=${encodeURIComponent(input)}`;
+  const data = await fetchJson(url);
+  const segments = Array.isArray(data?.[0]) ? data[0] : [];
+  const translated = segments.map((seg) => (Array.isArray(seg) ? seg[0] : '')).join('');
+  return translated || text;
+}
+
+async function mapWithConcurrency(items, limit, worker) {
+  const results = new Array(items.length);
+  let cursor = 0;
+  const runners = Array.from({ length: Math.min(limit, items.length) }, async () => {
+    while (cursor < items.length) {
+      const index = cursor++;
+      results[index] = await worker(items[index], index);
+    }
+  });
+  await Promise.all(runners);
+  return results;
+}
+
+async function translateItems(items) {
+  let done = 0;
+  await mapWithConcurrency(items, TRANSLATE_CONCURRENCY, async (item) => {
+    try {
+      const [titleZh, snippetZh] = await Promise.all([
+        translateText(item.title),
+        translateText(item.contentSnippet),
+      ]);
+      if (titleZh && titleZh !== item.title) item.titleZh = titleZh;
+      if (snippetZh && snippetZh !== item.contentSnippet) item.contentSnippetZh = snippetZh;
+    } catch (err) {
+      console.warn(`Translation failed for "${item.title.slice(0, 40)}": ${err.message}`);
+    }
+    done += 1;
+    if (done % 25 === 0) console.log(`Translated ${done}/${items.length} items`);
+  });
+}
+
 async function main() {
   const categories = {};
   const allItems = [];
@@ -339,15 +406,21 @@ async function main() {
     allItems.push(...items);
   }
 
-  const topStories = categories.top.slice(0, 5);
+  const topStories = categories.top.slice(0, TOP_STORIES_COUNT);
 
   const picksForYou = [];
   const shuffled = allItems
     .filter((item) => !topStories.some((top) => top.id === item.id))
     .sort(() => Math.random() - 0.5);
-  for (let i = 0; i < Math.min(5, shuffled.length); i++) {
+  for (let i = 0; i < Math.min(PICKS_COUNT, shuffled.length); i++) {
     picksForYou.push(shuffled[i]);
   }
+
+  // Translate every story (top stories, picks and category lists share the
+  // same object references, so translating the deduped list covers all).
+  const unique = [...new Map(allItems.map((item) => [item.id, item])).values()];
+  console.log(`Translating ${unique.length} unique items to Chinese...`);
+  await translateItems(unique);
 
   const output = {
     lastUpdated: new Date().toISOString(),

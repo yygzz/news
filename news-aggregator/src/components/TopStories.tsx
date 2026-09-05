@@ -22,19 +22,19 @@ export function TopStories({ stories, moreStories = [] }: TopStoriesProps) {
 
       <div className="flex flex-col lg:flex-row gap-6">
         <div className="lg:w-[60%]">
-          <NewsCard item={main} variant="featured" />
+          <NewsCard item={main} variant="featured" index={0} />
         </div>
         <div className="lg:w-[40%] flex flex-col">
-          {side.map((item) => (
-            <NewsCard key={item.id} item={item} variant="compact" />
+          {side.map((item, i) => (
+            <NewsCard key={item.id} item={item} variant="compact" index={i + 1} />
           ))}
         </div>
       </div>
 
       {expanded && moreStories.length > 0 && (
-        <div className="mt-2 flex flex-col divide-y divide-gray-100">
-          {moreStories.map((item) => (
-            <NewsCard key={item.id} item={item} variant="compact" />
+        <div className="mt-2 flex flex-col divide-y divide-gray-100 expand-enter">
+          {moreStories.map((item, i) => (
+            <NewsCard key={item.id} item={item} variant="compact" index={i} />
           ))}
         </div>
       )}
@@ -44,7 +44,7 @@ export function TopStories({ stories, moreStories = [] }: TopStoriesProps) {
         className="mt-4 w-full flex items-center justify-center gap-2 py-3 bg-gn-bg hover:bg-gray-200 rounded-lg text-sm font-medium text-gn-gray transition-colors"
       >
         <Newspaper className="w-4 h-4" />
-        {expanded ? 'Show less' : 'See more headlines & perspectives'}
+        {expanded ? 'Show less' : `See more headlines & perspectives${moreStories.length > 0 ? ` (${moreStories.length})` : ''}`}
       </button>
     </section>
   );

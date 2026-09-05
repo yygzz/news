@@ -1,10 +1,11 @@
-import { mockNewsData } from '../data/mockNews';
 import { NEWS_DATA_URL, USE_MOCK } from './config';
 import type { NewsData } from '../types';
 
 export async function fetchNewsData(): Promise<NewsData> {
   if (USE_MOCK) {
-    return Promise.resolve(mockNewsData);
+    // 开发模式才动态加载 mock 数据，生产构建不会打进 bundle。
+    const { mockNewsData } = await import('../data/mockNews');
+    return mockNewsData;
   }
 
   const response = await fetch(NEWS_DATA_URL);

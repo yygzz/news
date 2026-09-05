@@ -131,16 +131,21 @@ function AppContent() {
     }
 
     switch (view) {
-      case 'home':
+      case 'home': {
+        // 主页除了 Top stories 外，再展示各分类最近的新闻，提升信息量。
+        const topIds = new Set(data.topStories.map((item) => item.id));
+        const latest = sortByDate(allItems.filter((item) => !topIds.has(item.id)));
         return (
           <>
             <DateHeader lastUpdated={data.lastUpdated} />
             <TopStories stories={data.topStories} moreStories={data.categories.top.slice(5)} />
-            <div className="lg:hidden">
+            <NewsList title="Latest stories" items={latest} />
+            <div className="lg:hidden mt-6">
               <SidePicks items={data.picksForYou} />
             </div>
           </>
         );
+      }
       case 'for-you':
         return (
           <NewsList

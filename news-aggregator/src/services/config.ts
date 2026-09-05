@@ -17,9 +17,11 @@ export const CATEGORY_MAP: Record<NewsCategory, string> = {
   sports: 'Sports',
   science: 'Science',
   health: 'Health',
+  china: '国内',
 };
 
 export const NAV_CATEGORIES: { key: NewsCategory; label: string }[] = [
+  { key: 'china', label: '国内' },
   { key: 'world', label: 'World' },
   { key: 'business', label: 'Business' },
   { key: 'technology', label: 'Technology' },

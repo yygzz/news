@@ -22,3 +22,74 @@ body {
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+
+/* 横向滚动条隐藏（CategoryNav 使用） */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* 新闻卡片入场：轻微上浮 + 淡入，配合父级传入的 animation-delay 形成阶梯效果 */
+@keyframes news-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.news-card-enter {
+  animation: news-fade-up 0.35s ease-out both;
+  will-change: opacity, transform;
+}
+
+/* 展开区块的淡入 */
+@keyframes expand-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.expand-enter {
+  animation: expand-fade 0.3s ease-out both;
+}
+
+/* 骨架屏 shimmer（比 animate-pulse 更细腻，且只跑一次合成层动画） */
+.skeleton-shimmer {
+  position: relative;
+  overflow: hidden;
+  background-color: #e5e7eb;
+}
+.skeleton-shimmer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.7), transparent);
+  animation: shimmer 1.4s infinite;
+}
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* 尊重系统的减少动效设置 */
+@media (prefers-reduced-motion: reduce) {
+  .news-card-enter,
+  .expand-enter {
+    animation: none;
+  }
+  .skeleton-shimmer::after {
+    animation: none;
+  }
+}

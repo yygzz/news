@@ -1,17 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useNow } from './useNow';
 
 export function useRelativeTime(isoDate: string): string {
-  const [relative, setRelative] = useState<string>(() => formatRelative(isoDate));
-
-  useEffect(() => {
-    setRelative(formatRelative(isoDate));
-    const timer = setInterval(() => {
-      setRelative(formatRelative(isoDate));
-    }, 60000);
-    return () => clearInterval(timer);
-  }, [isoDate]);
-
-  return relative;
+  // 订阅全局共享的分钟级时钟（useNow），而不是每个卡片各自 setInterval。
+  useNow();
+  return formatRelative(isoDate);
 }
 
 function formatRelative(isoDate: string): string {
