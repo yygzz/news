@@ -69,6 +69,7 @@ const SOURCE_FEEDS = {
     { url: 'https://www.solidot.org/index.rss', source: 'Solidot' },
     { url: 'https://www.ifanr.com/feed', source: '爱范儿' },
     { url: 'https://www.ftchinese.com/rss/news', source: 'FT中文网' },
+    { url: 'https://www.chinanews.com.cn/rss/scroll-news.xml', source: '中国新闻网' },
     { url: 'https://feeds.bbci.co.uk/zhongwen/simp/rss.xml', source: 'BBC 中文', vpn: true },
   ],
 };
@@ -319,7 +320,11 @@ async function fetchCategory(category, feeds) {
       }
     }
   }
-  merged.sort((a, b) => new Date(b.pubDate).getTime() - new Date(a.pubDate).getTime());
+  // 优先展示无需 VPN 的内容（vpnRequired=false 在前），同组内按时间降序。
+  merged.sort((a, b) => {
+    if (a.vpnRequired !== b.vpnRequired) return a.vpnRequired ? 1 : -1;
+    return new Date(b.pubDate).getTime() - new Date(a.pubDate).getTime();
+  });
 
   const counts = new Map();
   const capped = [];
@@ -408,12 +413,16 @@ async function main() {
 
   const topStories = categories.top.slice(0, TOP_STORIES_COUNT);
 
+  // 优先挑选无需 VPN 的内容，再随机补充。
   const picksForYou = [];
-  const shuffled = allItems
+  const notVpn = allItems.filter((item) => !item.vpnRequired);
+  const vpnItems = allItems.filter((item) => item.vpnRequired && !topStories.some((top) => top.id === item.id));
+  const notVpnTop = notVpn
     .filter((item) => !topStories.some((top) => top.id === item.id))
     .sort(() => Math.random() - 0.5);
-  for (let i = 0; i < Math.min(PICKS_COUNT, shuffled.length); i++) {
-    picksForYou.push(shuffled[i]);
+  for (const item of [...notVpnTop, ...vpnItems]) {
+    if (picksForYou.length >= PICKS_COUNT) break;
+    picksForYou.push(item);
   }
 
   // Translate every story (top stories, picks and category lists share the
