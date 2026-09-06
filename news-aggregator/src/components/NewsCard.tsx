@@ -24,6 +24,14 @@ function VpnBadge() {
   );
 }
 
+function AiBadge() {
+  return (
+    <span className="text-[10px] font-semibold text-gn-yellow border border-gn-yellow/40 rounded px-1 py-px leading-none flex-shrink-0">
+      AI search
+    </span>
+  );
+}
+
 /** favicon 加载失败时隐藏图片元素，避免出现破图占位 */
 function onFaviconError(event: React.SyntheticEvent<HTMLImageElement>) {
   event.currentTarget.style.display = 'none';
@@ -88,6 +96,7 @@ export const NewsCard = memo(function NewsCard({ item, variant = 'default', inde
               {item.source}
             </span>
             {item.vpnRequired && <VpnBadge />}
+            {item.aiGenerated && <AiBadge />}
             {followButton('w-3 h-3')}
           </div>
           <h3 className="text-[15px] font-bold text-gray-900 leading-snug line-clamp-2 group-hover:text-gn-blue transition-colors">
@@ -134,6 +143,7 @@ export const NewsCard = memo(function NewsCard({ item, variant = 'default', inde
           />
           <span className="text-xs text-gn-gray">{item.source}</span>
           {item.vpnRequired && <VpnBadge />}
+          {item.aiGenerated && <AiBadge />}
           {followButton('w-3.5 h-3.5')}
         </div>
         <h3 className="text-lg font-bold text-gray-900 leading-snug line-clamp-2 group-hover:text-gn-blue transition-colors">
@@ -166,6 +176,7 @@ export const NewsCard = memo(function NewsCard({ item, variant = 'default', inde
           />
           <span className="text-xs text-gn-gray font-medium">{item.source}</span>
           {item.vpnRequired && <VpnBadge />}
+          {item.aiGenerated && <AiBadge />}
           {followButton('w-3.5 h-3.5')}
         </div>
         <h3 className="text-sm font-bold text-gray-900 leading-snug line-clamp-2 group-hover:text-gn-blue transition-colors">

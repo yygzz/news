@@ -8,6 +8,7 @@ export default {
     extend: {
       colors: {
         'gn-blue': '#1a73e8',
+        'gn-yellow': '#f9ab00',
         'gn-gray': '#5f6368',
         'gn-bg': '#f8f9fa',
         'gn-border': '#dadce0',

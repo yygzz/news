@@ -28,6 +28,8 @@ export interface NewsItem {
   authors?: string[];
   /** 来源网站在中国大陆不可直接访问，需要 VPN */
   vpnRequired?: boolean;
+  /** AI 检索生成的新闻（每日定时任务联网搜索写入） */
+  aiGenerated?: boolean;
 }
 
 export interface WeatherData {

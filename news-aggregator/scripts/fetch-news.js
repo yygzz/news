@@ -83,6 +83,7 @@ const PICKS_COUNT = 8;
 const TRANSLATE_CONCURRENCY = 5;
 const TRANSLATE_MAX_CHARS = 800;
 const FAVICON_CONCURRENCY = 6;
+const AI_NEWS_MAX_AGE_MS = 72 * 60 * 60 * 1000;
 
 function hashId(link) {
   return crypto.createHash('md5').update(link).digest('hex');
@@ -351,6 +352,70 @@ async function fetchCategory(category, feeds) {
   return selected;
 }
 
+// 读取每日定时任务维护的 AI 新闻（data/ai-news.json）。文件缺失、JSON
+// 非法或不是数组时仅警告并返回空数组，绝不抛错中断构建。
+function loadAiNews() {
+  const filePath = path.join(__dirname, '..', 'data', 'ai-news.json');
+  try {
+    if (!fs.existsSync(filePath)) {
+      console.warn(`AI news file not found: ${filePath}`);
+      return [];
+    }
+    const raw = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+    if (!Array.isArray(raw)) {
+      console.warn('AI news file is not a JSON array, skipping');
+      return [];
+    }
+    return raw;
+  } catch (err) {
+    console.warn(`Failed to load AI news: ${err.message}`);
+    return [];
+  }
+}
+
+// 把 data/ai-news.json 的原始条目映射为与 RSS 条目同形状的对象：
+// 校验必填字段、兜底 pubDate、按 72 小时时效过滤、按 id 去重。
+function mapAiNews(raw) {
+  const now = Date.now();
+  const seen = new Set();
+  const items = [];
+  for (const entry of raw) {
+    if (entry == null || typeof entry !== 'object') continue;
+    const title = typeof entry.title === 'string' ? entry.title.trim() : '';
+    const link = typeof entry.link === 'string' ? entry.link.trim() : '';
+    if (!title || !link) continue;
+
+    const parsedDate = entry.pubDate != null ? new Date(entry.pubDate) : null;
+    const pubDate =
+      parsedDate && !Number.isNaN(parsedDate.getTime())
+        ? parsedDate.toISOString()
+        : new Date().toISOString();
+    if (now - new Date(pubDate).getTime() > AI_NEWS_MAX_AGE_MS) continue;
+
+    const id = hashId(link);
+    if (seen.has(id)) continue;
+    seen.add(id);
+
+    items.push({
+      id,
+      title,
+      link,
+      source: typeof entry.source === 'string' && entry.source.trim() ? entry.source : 'AI 快讯',
+      // 优先使用数据源提供的根域名（favicon 更可靠），缺失时用链接域名兜底
+      sourceUrl:
+        (typeof entry.sourceUrl === 'string' && entry.sourceUrl.trim()) || extractDomain(link),
+      pubDate,
+      contentSnippet:
+        typeof entry.contentSnippet === 'string' ? entry.contentSnippet.substring(0, 150) : '',
+      thumbnail: null,
+      category: 'top',
+      vpnRequired: entry.vpnRequired === true,
+      aiGenerated: true,
+    });
+  }
+  return items;
+}
+
 function hasCJK(text) {
   return /[一-鿿]/.test(text);
 }
@@ -497,6 +562,24 @@ async function main() {
     const items = await fetchCategory(category, feeds);
     categories[category] = items;
     allItems.push(...items);
+  }
+
+  // 合并每日定时任务写入的 AI 检索新闻（data/ai-news.json）
+  const aiItems = mapAiNews(loadAiNews());
+  if (aiItems.length > 0) {
+    const existingIds = new Set(allItems.map((item) => item.id));
+    const freshAi = aiItems.filter((item) => !existingIds.has(item.id));
+    if (freshAi.length > 0) {
+      categories.top = [...freshAi, ...categories.top]
+        .sort((a, b) => {
+          if (a.vpnRequired !== b.vpnRequired) return a.vpnRequired ? 1 : -1;
+          return new Date(b.pubDate).getTime() - new Date(a.pubDate).getTime();
+        })
+        .slice(0, ITEMS_PER_CATEGORY);
+      allItems.length = 0;
+      for (const items of Object.values(categories)) allItems.push(...items);
+      console.log(`Merged ${freshAi.length} AI news items into top category`);
+    }
   }
 
   const topStories = categories.top.slice(0, TOP_STORIES_COUNT);
