@@ -1,13 +1,14 @@
-export function getFaviconUrl(input: string, size = 64): string {
-  // 兼容传入完整 URL 或裸域名；favicon.im 国内可直接访问，替代需 VPN 的 Google favicon 服务。
+export function getFaviconUrl(input: string): string {
+  // 兼容传入完整 URL 或裸域名；favicon 由 CI 构建期下载到同源 icons/ 目录，避免依赖第三方服务。
   let domain = input;
   try {
     domain = new URL(input).hostname;
   } catch {
     // 已是裸域名
   }
-  domain = domain.replace(/^www\./, '');
-  return `https://favicon.im/${encodeURIComponent(domain)}?size=${size}`;
+  domain = domain.replace(/^www\./, '').toLowerCase();
+  const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
+  return `${base}icons/${encodeURIComponent(domain)}.png`;
 }
 
 export function extractDomain(url: string): string {

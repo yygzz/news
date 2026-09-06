@@ -76,12 +76,13 @@ const SOURCE_FEEDS = {
 
 const REQUEST_TIMEOUT_MS = 10000;
 const MAX_RETRIES = 3;
-const ITEMS_PER_CATEGORY = 20;
+const ITEMS_PER_CATEGORY = 25;
 const PER_SOURCE_CAP = 8;
 const TOP_STORIES_COUNT = 5;
 const PICKS_COUNT = 8;
 const TRANSLATE_CONCURRENCY = 5;
 const TRANSLATE_MAX_CHARS = 800;
+const FAVICON_CONCURRENCY = 6;
 
 function hashId(link) {
   return crypto.createHash('md5').update(link).digest('hex');
@@ -401,6 +402,93 @@ async function translateItems(items) {
   });
 }
 
+// 构建期下载 favicon（PNG 二进制）。与 fetchWithRetry 不同，这里按 Buffer
+// 收集响应体；跟随 3xx 重定向，非 200 或超时（10s）均视为失败。
+function downloadFavicon(url, redirectsLeft = 5) {
+  return new Promise((resolve, reject) => {
+    const req = https.get(
+      url,
+      {
+        timeout: REQUEST_TIMEOUT_MS,
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (compatible; NewsAggregatorBot/1.0)',
+        },
+      },
+      (res) => {
+        if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
+          res.resume();
+          let nextUrl;
+          try {
+            nextUrl = new URL(res.headers.location, url).toString();
+          } catch {
+            reject(new Error(`Invalid redirect from ${url}`));
+            return;
+          }
+          if (redirectsLeft <= 0) {
+            reject(new Error(`Too many redirects for ${url}`));
+            return;
+          }
+          downloadFavicon(nextUrl, redirectsLeft - 1).then(resolve, reject);
+          return;
+        }
+
+        if (res.statusCode !== 200) {
+          res.resume();
+          reject(new Error(`HTTP ${res.statusCode} for ${url}`));
+          return;
+        }
+
+        const chunks = [];
+        res.on('data', (chunk) => chunks.push(chunk));
+        res.on('end', () => resolve(Buffer.concat(chunks)));
+        res.on('error', reject);
+      },
+    );
+
+    req.on('timeout', () => {
+      req.destroy(new Error(`Request timeout for ${url}`));
+    });
+
+    req.on('error', reject);
+  });
+}
+
+// sourceUrl 一般已是 extractDomain() 产出的裸域名，这里再做一次防御性
+// 规范化：含协议时取 hostname，去掉 www. 前缀并转小写；无效值返回空串。
+function normalizeDomain(sourceUrl) {
+  if (!sourceUrl) return '';
+  let domain = String(sourceUrl).trim();
+  if (domain.includes('://')) {
+    try {
+      domain = new URL(domain).hostname;
+    } catch {
+      return '';
+    }
+  }
+  return domain.replace(/^www\./i, '').toLowerCase();
+}
+
+// 批量下载各来源域名的 favicon 到 public/icons/{domain}.png。
+// 单个域名失败只 console.warn 并跳过，绝不中断整体流程。
+async function downloadFavicons(domains) {
+  const iconsDir = path.join(__dirname, '..', 'public', 'icons');
+  fs.mkdirSync(iconsDir, { recursive: true });
+
+  let ok = 0;
+  await mapWithConcurrency(domains, FAVICON_CONCURRENCY, async (domain) => {
+    const url = `https://www.google.com/s2/favicons?domain=${encodeURIComponent(domain)}&sz=64`;
+    try {
+      const buffer = await downloadFavicon(url);
+      fs.writeFileSync(path.join(iconsDir, `${domain}.png`), buffer);
+      ok += 1;
+    } catch (err) {
+      console.warn(`Failed to download favicon for ${domain}: ${err.message}`);
+    }
+  });
+
+  console.log(`Downloaded ${ok}/${domains.length} favicons to public/icons`);
+}
+
 async function main() {
   const categories = {};
   const allItems = [];
@@ -442,6 +530,12 @@ async function main() {
   fs.mkdirSync(outputDir, { recursive: true });
   const outputPath = path.join(outputDir, 'news.json');
   fs.writeFileSync(outputPath, JSON.stringify(output, null, 2));
+
+  // 构建期下载各来源域名的 favicon，供前端展示来源图标。
+  const domains = [
+    ...new Set(allItems.map((item) => normalizeDomain(item.sourceUrl)).filter(Boolean)),
+  ];
+  await downloadFavicons(domains);
 
   const withThumbs = allItems.filter((item) => item.thumbnail).length;
   console.log(`Wrote ${outputPath} with ${allItems.length} total items (${withThumbs} with thumbnails)`);

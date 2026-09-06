@@ -1,4 +1,4 @@
-import { HelpCircle, Search, Settings, User, X } from 'lucide-react';
+import { Search, User, X } from 'lucide-react';
 import { useState } from 'react';
 
 interface HeaderProps {
@@ -49,12 +49,6 @@ export function Header({ searchValue, onSearchChange }: HeaderProps) {
             aria-label="切换搜索"
           >
             <Search className="w-5 h-5 text-gn-gray" />
-          </button>
-          <button className="p-2 rounded-full hover:bg-gray-100" aria-label="帮助">
-            <HelpCircle className="w-5 h-5 text-gn-gray" />
-          </button>
-          <button className="p-2 rounded-full hover:bg-gray-100" aria-label="设置">
-            <Settings className="w-5 h-5 text-gn-gray" />
           </button>
           <button
             className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-sm font-medium"

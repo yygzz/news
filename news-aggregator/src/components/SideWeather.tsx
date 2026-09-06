@@ -1,6 +1,4 @@
 import {
-  ChevronLeft,
-  ChevronRight,
   Cloud,
   CloudFog,
   CloudLightning,
@@ -14,10 +12,13 @@ import {
   Wind,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import type { ChangeEvent } from 'react';
 import { useWeather } from '../hooks/useWeather';
 import { fetchWeatherByCity, PRESET_CITIES, weatherLabel } from '../services/weatherService';
 import type { WeatherData } from '../types';
 import { SkeletonCard } from './SkeletonCard';
+
+const CITY_STORAGE_KEY = 'gn-weather-city';
 
 function weatherIcon(code: number, isDay: boolean) {
   const cls = 'w-12 h-12';
@@ -36,25 +37,37 @@ function weatherIcon(code: number, isDay: boolean) {
   return <Sun className={`${cls} text-yellow-500`} />;
 }
 
-type Unit = 'c' | 'f';
+/** 温度固定按摄氏度展示 */
+function formatTemp(celsius: number): string {
+  return `${Math.round(celsius)}°`;
+}
 
-function displayTemp(celsius: number, unit: Unit): string {
-  const value = unit === 'c' ? celsius : celsius * 1.8 + 32;
-  return `${Math.round(value)}°`;
+function readStoredCity(): string {
+  try {
+    const stored = localStorage.getItem(CITY_STORAGE_KEY);
+    return stored && PRESET_CITIES.some((city) => city.name === stored) ? stored : '';
+  } catch {
+    return '';
+  }
 }
 
 export function SideWeather() {
   const { weather, loading } = useWeather();
-  const [cityIndex, setCityIndex] = useState<number | null>(null);
+  const [selectedCity, setSelectedCity] = useState<string>(readStoredCity);
   const [cityWeather, setCityWeather] = useState<WeatherData | null>(null);
   const [cityLoading, setCityLoading] = useState(false);
-  const [unit, setUnit] = useState<Unit>('c');
 
   useEffect(() => {
-    if (cityIndex === null) return;
+    const city = PRESET_CITIES.find((item) => item.name === selectedCity);
+    if (!city) {
+      setCityWeather(null);
+      setCityLoading(false);
+      return;
+    }
     let cancelled = false;
+    setCityWeather(null);
     setCityLoading(true);
-    fetchWeatherByCity(PRESET_CITIES[cityIndex])
+    fetchWeatherByCity(city)
       .then((data) => {
         if (!cancelled) {
           setCityWeather(data);
@@ -69,17 +82,20 @@ export function SideWeather() {
     return () => {
       cancelled = true;
     };
-  }, [cityIndex]);
+  }, [selectedCity]);
 
-  const step = (delta: number) => {
-    setCityIndex((current) => {
-      const base = current === null ? (delta > 0 ? -1 : 0) : current;
-      return (base + delta + PRESET_CITIES.length) % PRESET_CITIES.length;
-    });
+  const handleCityChange = (event: ChangeEvent<HTMLSelectElement>) => {
+    const value = event.target.value;
+    setSelectedCity(value);
+    try {
+      localStorage.setItem(CITY_STORAGE_KEY, value);
+    } catch {
+      // 隐私模式等场景下静默失败
+    }
   };
 
   const displayed = cityWeather ?? weather;
-  const isLoading = loading || (cityLoading && !cityWeather);
+  const isLoading = selectedCity ? cityLoading && !cityWeather : loading;
 
   if (isLoading) {
     return (
@@ -91,70 +107,52 @@ export function SideWeather() {
 
   return (
     <div className="bg-white rounded-xl border border-gn-border p-4 mb-6">
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-1.5 text-sm font-medium text-gray-900">
+      <div className="flex items-center justify-between gap-2 mb-3">
+        <div className="flex items-center gap-1.5 text-sm font-medium text-gray-900 shrink-0">
           <MapPin className="w-4 h-4 text-gn-gray" />
-          {cityWeather ? `${displayed.location}天气` : '本地天气'}
+          {selectedCity ? `${displayed.location}天气` : '本地天气'}
         </div>
-        <div className="flex items-center gap-1">
-          {/* °C / °F 切换 */}
-          <div className="flex text-xs font-medium border border-gn-border rounded-full overflow-hidden mr-1">
-            <button
-              onClick={() => setUnit('c')}
-              className={`px-2 py-0.5 transition-colors ${unit === 'c' ? 'bg-gn-blue text-white' : 'text-gn-gray hover:bg-gray-100'}`}
-            >
-              °C
-            </button>
-            <button
-              onClick={() => setUnit('f')}
-              className={`px-2 py-0.5 transition-colors ${unit === 'f' ? 'bg-gn-blue text-white' : 'text-gn-gray hover:bg-gray-100'}`}
-            >
-              °F
-            </button>
-          </div>
-          <button
-            className="p-1 hover:bg-gray-100 rounded transition-colors"
-            aria-label="上一个地点"
-            onClick={() => step(-1)}
-          >
-            <ChevronLeft className="w-4 h-4 text-gn-gray" />
-          </button>
-          <button
-            className="p-1 hover:bg-gray-100 rounded transition-colors"
-            aria-label="下一个地点"
-            onClick={() => step(1)}
-          >
-            <ChevronRight className="w-4 h-4 text-gn-gray" />
-          </button>
-        </div>
+        <select
+          value={selectedCity}
+          onChange={handleCityChange}
+          aria-label="选择城市"
+          className="text-sm rounded border border-gn-border px-2 py-1 text-gray-700 bg-white max-w-[9rem] focus:outline-none focus:border-gn-blue"
+        >
+          <option value="">自动定位</option>
+          {PRESET_CITIES.map((city) => (
+            <option key={city.name} value={city.name}>
+              {city.name}
+            </option>
+          ))}
+        </select>
       </div>
 
       <div className="flex items-center gap-4">
         {weatherIcon(displayed.weatherCode, displayed.isDay)}
         <div>
           <div className="text-3xl font-normal text-gray-900">
-            {displayTemp(displayed.temperature, unit)}
-            <span className="text-lg text-gn-gray">{unit === 'c' ? 'C' : 'F'}</span>
+            {formatTemp(displayed.temperature)}
+            <span className="text-lg text-gn-gray">C</span>
           </div>
           <div className="text-sm text-gray-700">{weatherLabel(displayed.weatherCode)}</div>
           <div className="text-sm text-gn-gray">{displayed.location}</div>
         </div>
       </div>
 
-      {/* 高低温 / 体感 / 湿度 / 风速 */}
+      {/* 最高最低 / 体感 / 湿度 / 风速 */}
       <div className="mt-3 grid grid-cols-2 gap-x-3 gap-y-1.5 text-xs text-gn-gray">
         {displayed.tempMax !== undefined && displayed.tempMin !== undefined && (
           <div className="flex items-center gap-1.5">
             <Thermometer className="w-3.5 h-3.5" />
             <span>
-              最高 {displayTemp(displayed.tempMax, unit)} / 最低 {displayTemp(displayed.tempMin, unit)}
+              最高 {formatTemp(displayed.tempMax)} / 最低 {formatTemp(displayed.tempMin)}
             </span>
           </div>
         )}
         {displayed.feelsLike !== undefined && (
           <div className="flex items-center gap-1.5">
             <Sun className="w-3.5 h-3.5" />
-            <span>体感 {displayTemp(displayed.feelsLike, unit)}</span>
+            <span>体感 {formatTemp(displayed.feelsLike)}</span>
           </div>
         )}
         {displayed.humidity !== undefined && (

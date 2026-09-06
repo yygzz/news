@@ -1,5 +1,4 @@
-import { ChevronRight, Newspaper } from 'lucide-react';
-import { useState } from 'react';
+import { ChevronRight } from 'lucide-react';
 import type { NewsItem } from '../types';
 import { NewsCard } from './NewsCard';
 
@@ -9,7 +8,6 @@ interface TopStoriesProps {
 }
 
 export function TopStories({ stories, moreStories = [] }: TopStoriesProps) {
-  const [expanded, setExpanded] = useState(false);
   const main = stories[0];
   const side = stories.slice(1, 5);
 
@@ -31,21 +29,13 @@ export function TopStories({ stories, moreStories = [] }: TopStoriesProps) {
         </div>
       </div>
 
-      {expanded && moreStories.length > 0 && (
+      {moreStories.length > 0 && (
         <div className="mt-2 flex flex-col divide-y divide-gray-100 expand-enter">
           {moreStories.map((item, i) => (
             <NewsCard key={item.id} item={item} variant="compact" index={i} />
           ))}
         </div>
       )}
-
-      <button
-        onClick={() => setExpanded((v) => !v)}
-        className="mt-4 w-full flex items-center justify-center gap-2 py-3 bg-gn-bg hover:bg-gray-200 rounded-lg text-sm font-medium text-gn-gray transition-colors"
-      >
-        <Newspaper className="w-4 h-4" />
-        {expanded ? '收起' : `查看全部头条与观点${moreStories.length > 0 ? ` (${moreStories.length})` : ''}`}
-      </button>
     </section>
   );
 }

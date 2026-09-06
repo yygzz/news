@@ -1,5 +1,5 @@
 import { Check, Newspaper, Plus } from 'lucide-react';
-import { memo } from 'react';
+import { memo, useState } from 'react';
 import { useFollow } from '../context/FollowContext';
 import { useRelativeTime } from '../hooks/useRelativeTime';
 import type { NewsItem } from '../types';
@@ -24,10 +24,22 @@ function VpnBadge() {
   );
 }
 
+/** favicon 加载失败时隐藏图片元素，避免出现破图占位 */
+function onFaviconError(event: React.SyntheticEvent<HTMLImageElement>) {
+  event.currentTarget.style.display = 'none';
+}
+
+/** 图片元素被复用（src 变化）重新加载成功时，恢复显示 */
+function onFaviconLoad(event: React.SyntheticEvent<HTMLImageElement>) {
+  event.currentTarget.style.display = '';
+}
+
 export const NewsCard = memo(function NewsCard({ item, variant = 'default', index }: NewsCardProps) {
   const relativeTime = useRelativeTime(item.pubDate);
   const { isFollowed, toggle } = useFollow();
   const followed = isFollowed(item.sourceUrl);
+  // 缩略图加载失败标记：无缩略图时初始即为 true，与加载失败同样处理
+  const [thumbnailFailed, setThumbnailFailed] = useState(!item.thumbnail);
 
   const title = item.titleZh ?? item.title;
   const snippet = item.contentSnippetZh ?? item.contentSnippet;
@@ -69,6 +81,8 @@ export const NewsCard = memo(function NewsCard({ item, variant = 'default', inde
               className="w-3 h-3"
               loading="lazy"
               decoding="async"
+              onError={onFaviconError}
+              onLoad={onFaviconLoad}
             />
             <span className="text-[11px] text-gn-gray uppercase font-medium tracking-wide">
               {item.source}
@@ -93,13 +107,14 @@ export const NewsCard = memo(function NewsCard({ item, variant = 'default', inde
         className="news-card-enter cursor-pointer group hover:bg-gn-bg rounded-lg p-2 -mx-2 transition-colors"
       >
         <div className="aspect-video w-full overflow-hidden rounded-lg mb-3">
-          {item.thumbnail ? (
+          {item.thumbnail && !thumbnailFailed ? (
             <img
               src={item.thumbnail}
               alt={title}
               className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-300"
               loading="lazy"
               decoding="async"
+              onError={() => setThumbnailFailed(true)}
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center bg-gn-bg">
@@ -114,6 +129,8 @@ export const NewsCard = memo(function NewsCard({ item, variant = 'default', inde
             className="w-4 h-4"
             loading="lazy"
             decoding="async"
+            onError={onFaviconError}
+            onLoad={onFaviconLoad}
           />
           <span className="text-xs text-gn-gray">{item.source}</span>
           {item.vpnRequired && <VpnBadge />}
@@ -144,6 +161,8 @@ export const NewsCard = memo(function NewsCard({ item, variant = 'default', inde
             className="w-4 h-4"
             loading="lazy"
             decoding="async"
+            onError={onFaviconError}
+            onLoad={onFaviconLoad}
           />
           <span className="text-xs text-gn-gray font-medium">{item.source}</span>
           {item.vpnRequired && <VpnBadge />}
@@ -157,7 +176,7 @@ export const NewsCard = memo(function NewsCard({ item, variant = 'default', inde
           <p className="text-xs text-gn-gray mt-0.5">{item.authors.join(', ')}</p>
         )}
       </div>
-      {item.thumbnail && (
+      {item.thumbnail && !thumbnailFailed && (
         <div className="w-[60px] h-[60px] flex-shrink-0 rounded-lg overflow-hidden bg-gray-100">
           <img
             src={item.thumbnail}
@@ -165,6 +184,7 @@ export const NewsCard = memo(function NewsCard({ item, variant = 'default', inde
             className="w-full h-full object-cover"
             loading="lazy"
             decoding="async"
+            onError={() => setThumbnailFailed(true)}
           />
         </div>
       )}

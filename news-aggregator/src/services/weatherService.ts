@@ -26,14 +26,31 @@ export interface PresetCity {
 }
 
 export const PRESET_CITIES: PresetCity[] = [
+  // 国内 15 城
   { name: '北京', latitude: 39.9042, longitude: 116.4074 },
   { name: '上海', latitude: 31.2304, longitude: 121.4737 },
+  { name: '广州', latitude: 23.1291, longitude: 113.2644 },
   { name: '深圳', latitude: 22.5431, longitude: 114.0579 },
   { name: '成都', latitude: 30.5728, longitude: 104.0668 },
+  { name: '杭州', latitude: 30.2741, longitude: 120.1551 },
+  { name: '武汉', latitude: 30.5928, longitude: 114.3055 },
+  { name: '西安', latitude: 34.3416, longitude: 108.9398 },
+  { name: '南京', latitude: 32.0603, longitude: 118.7969 },
+  { name: '重庆', latitude: 29.563, longitude: 106.5516 },
+  { name: '天津', latitude: 39.3434, longitude: 117.3616 },
+  { name: '苏州', latitude: 31.2989, longitude: 120.5853 },
+  { name: '长沙', latitude: 28.2282, longitude: 112.9388 },
+  { name: '青岛', latitude: 36.0671, longitude: 120.3826 },
+  { name: '郑州', latitude: 34.7466, longitude: 113.6254 },
+  // 国际 8 城
   { name: '纽约', latitude: 40.7128, longitude: -74.006 },
   { name: '伦敦', latitude: 51.5074, longitude: -0.1278 },
   { name: '东京', latitude: 35.6762, longitude: 139.6503 },
   { name: '新加坡', latitude: 1.3521, longitude: 103.8198 },
+  { name: '悉尼', latitude: -33.8688, longitude: 151.2093 },
+  { name: '巴黎', latitude: 48.8566, longitude: 2.3522 },
+  { name: '莫斯科', latitude: 55.7558, longitude: 37.6173 },
+  { name: '洛杉矶', latitude: 34.0522, longitude: -118.2437 },
 ];
 
 const MOCK_WEATHER: WeatherData = {
