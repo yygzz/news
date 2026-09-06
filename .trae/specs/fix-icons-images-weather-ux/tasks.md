@@ -1,0 +1,42 @@
+# Tasks
+
+- [x] Task 1: 建立开发基线（基于 origin/main，保护现有工作区）
+  - [x] SubTask 1.1: `git stash` 暂存工作区未提交改动（.trae-html-share-packages 下的 zip 修改）
+  - [x] SubTask 1.2: `git checkout -b fix-icons-weather origin/main`（旧快照 ca0740a 分支保留不动）
+  - [x] SubTask 1.3: `git stash pop` 恢复未提交改动（若冲突则保留在 stash 并记录说明，不得丢弃）
+  - [x] SubTask 1.4: `npm install`（news-aggregator 下，供本地构建验证）
+- [x] Task 2: fetch-news.js 构建期下载 favicon + 提升抓取量
+  - [x] SubTask 2.1: 抓取完成后收集 allItems 唯一 sourceUrl 域名（去 `www.`、小写规范化）
+  - [x] SubTask 2.2: 复用现有 fetchWithRetry 下载 `https://www.google.com/s2/favicons?domain={domain}&sz=64`，写入 `public/icons/{domain}.png`（目录不存在则创建；失败跳过并 console.warn）
+  - [x] SubTask 2.3: `ITEMS_PER_CATEGORY` 15→25，`PER_SOURCE_CAP` 6→8
+- [x] Task 3: 前端图标同源化 + 失败回退
+  - [x] SubTask 3.1: helpers.getFaviconUrl 改为返回 `${import.meta.env.BASE_URL}icons/{domain}.png`（域名规范化与 Task 2 一致）
+  - [x] SubTask 3.2: NewsCard 来源图标 `<img>` 增加 onError 回退（隐藏或灰色占位）
+  - [x] SubTask 3.3: index.html 移除 favicon.im 的 preconnect
+- [x] Task 4: 缩略图优雅降级
+  - [x] SubTask 4.1: featured 变体缩略图 onError → 显示 Newspaper 灰色占位（复用现有缺图占位样式）
+  - [x] SubTask 4.2: default 变体缩略图 onError → 隐藏缩略图容器（不留破图/空白框）
+- [x] Task 5: 去除操作按钮、内容直出
+  - [x] SubTask 5.1: NewsList 移除 visibleCount/「加载更多」，全量渲染（保留 `loading="lazy"`）
+  - [x] SubTask 5.2: TopStories 移除 expanded 状态与按钮，直接渲染 moreStories
+  - [x] SubTask 5.3: Header 移除帮助/设置占位按钮（保留搜索与头像）
+- [x] Task 6: 天气面板重构
+  - [x] SubTask 6.1: weatherService.ts 的 PRESET_CITIES 扩容（约 15 个国内城市 + 约 8 个国际城市，中文名）
+  - [x] SubTask 6.2: SideWeather 用 `<select>` 替代 ChevronLeft/ChevronRight（首项「自动定位」，默认；其余全部城市），选择写入 localStorage 并初始化读取
+  - [x] SubTask 6.3: 移除 °C/°F 切换按钮与 unit 状态，温度固定 °C
+  - [x] SubTask 6.4: 详情展示：体感/湿度/风速/最高最低 + weatherLabel 中文描述 + 昼夜图标（保留既有数据管线与缓存）
+- [x] Task 7: 本地构建验证
+  - [x] SubTask 7.1: `npm run build` 通过（tsc + vite，无类型错误）
+- [x] Task 8: 推送部署
+  - [x] SubTask 8.1: 提交（中文 conventional commit message）并 push origin HEAD:main
+  - [x] SubTask 8.2: `gh run watch` 等待 CI 结论 success
+- [x] Task 9: 线上验证
+  - [x] SubTask 9.1: 部署站点 `/news/icons/{domain}.png` 抽样返回 200；页面无第三方 favicon 请求逻辑（产物内无 favicon.im 引用）
+  - [x] SubTask 9.2: 线上页面无「加载更多/查看全部」按钮；天气面板为 select、含「自动定位」+全部城市、无箭头/无 °F
+  - [x] SubTask 9.3: 中文界面、中国新闻网内容存在、VPN need 标注与非 VPN 优先排序保持不变
+
+# Task Dependencies
+- Task 2、3、4、5、6 相互独立，可并行（Task 3 依赖 Task 2 的域名规范化约定，接口先行约定即可并行）
+- Task 7 依赖 Task 2-6 全部完成
+- Task 8 依赖 Task 7
+- Task 9 依赖 Task 8
