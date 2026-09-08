@@ -111,5 +111,77 @@
     "pubDate": "2026-09-06T23:41:00.000Z",
     "contentSnippet": "9月3日，2026世界动力电池大会在四川宜宾开幕，主题为“电驱万物·融合共生”。开幕式发布了超快充动力电池技术、高比能混合固液电池技术、换电乘用车长寿命电池技术等年度创新成果，并启动电池行业绿色供应链建设行动，推动绿色低碳贯穿电池原料开采到回收再生全生命周期。",
     "vpnRequired": false
+  },
+  {
+    "title": "中国服务型机器人亮相2026柏林国际消费电子展",
+    "link": "https://ysxw.cctv.cn/article.html?channelId=1119&item_id=2125306576916216680&toc_style_id=feeds_default",
+    "source": "央视新闻",
+    "sourceUrl": "cctv.cn",
+    "pubDate": "2026-09-07T02:30:10.000Z",
+    "contentSnippet": "在2026柏林国际消费电子展上，中国企业带来的服务型机器人受到关注。轮式服务机器人可对衣物进行识别、分类、洗涤和收纳；爬楼清洁机器人通过仿生履带、3D感知等技术解决跨楼层移动难题；庭院场景中割草机器人加装机械臂后还能完成清障、采摘、浇水等任务。",
+    "vpnRequired": false
+  },
+  {
+    "title": "智象未来发布具身世界模型HiDream-O1-Embodied",
+    "link": "https://36kr.com/newsflashes/3972772905480713",
+    "source": "36氪",
+    "sourceUrl": "36kr.com",
+    "pubDate": "2026-09-07T03:39:00.000Z",
+    "contentSnippet": "智象未来（HiDream.ai）正式发布具身世界模型HiDream-O1-Embodied，强化机器人物理感知与动态预判能力，将世界模型能力由数字世界延伸至真实物理世界。该模型首次参评具身智能模型评测平台RoboColiseum，即在扰动适应（Robustness）子榜单中以平均分0.692登顶榜首。",
+    "vpnRequired": false
+  },
+  {
+    "title": "知行具身发布行业首款千赫兹视触觉传感器Imprint X",
+    "link": "https://36kr.com/newsflashes/3972805343851015",
+    "source": "36氪",
+    "sourceUrl": "36kr.com",
+    "pubDate": "2026-09-07T04:18:00.000Z",
+    "contentSnippet": "具身智能公司知行具身发布面向机器人操作的视触觉传感器Imprint X，搭载自研微型事件相机模组，实现延迟低至1毫秒、帧率超1000Hz的性能提升。该产品已进入多家3C制造企业产线开展落地验证，并与国内灵巧手厂商达成产品合作，瞄准机器人精密装配、柔性操作等场景。",
+    "vpnRequired": false
+  },
+  {
+    "title": "讯飞星火X2.5大模型正式发布 聚焦代码与智能体能力",
+    "link": "https://36kr.com/newsflashes/3972856996016649",
+    "source": "36氪",
+    "sourceUrl": "36kr.com",
+    "pubDate": "2026-09-07T04:46:00.000Z",
+    "contentSnippet": "科大讯飞正式发布星火X2.5大模型，采用MoE架构，参数规模为293B-A30B，重点提升代码和智能体能力，并增强数学、理解等通用能力。模型基于全国产算力完成全流程训练及推理，已上线讯飞开放平台。此前开源的星火X2.5-4B和1.7B端侧模型支持最长100万Token上下文，可本地部署。",
+    "vpnRequired": false
+  },
+  {
+    "title": "最高法发布首部涉人工智能纠纷司法裁判规则文件",
+    "link": "https://m.huanqiu.com/article/4T76E0mFygn",
+    "source": "环球网",
+    "sourceUrl": "huanqiu.com",
+    "pubDate": "2026-09-07T08:38:00.000Z",
+    "contentSnippet": "最高人民法院发布《关于依法审理涉人工智能纠纷案件的意见》，系首部由国家最高审判机构发布的涉AI司法裁判规则文件。意见明确规制AI换脸拟声、“网络开盒”等行为；AI“仿冒名人带货”构成欺诈的，消费者主张惩罚性赔偿获支持；经营者利用算法实施不合理差别待遇造成损害的，应承担侵权责任。",
+    "vpnRequired": false
+  },
+  {
+    "title": "OpenAI首席科学家发长文呼吁放缓AI研发",
+    "link": "https://cj.sina.com.cn/articles/view/1887344341/707e96d502001v1n6",
+    "source": "新浪",
+    "sourceUrl": "sina.com.cn",
+    "pubDate": "2026-09-07T10:17:00.000Z",
+    "contentSnippet": "OpenAI首席科学家帕乔基发布长文《异星心智》，警告AI能力正加速提升，距离递归自我改进已为时不远，目前没有任何一家实验室将对齐和监控做到足够可靠。他呼吁在行业建立共同安全标准之前，“自愿放缓”应成为共识，各国政府也应将AI协同治理列为优先事项。",
+    "vpnRequired": false
+  },
+  {
+    "title": "工信部：适时启动6G商用 2030年智能算力达9800EFLOPS",
+    "link": "http://www.xinhuanet.com/politics/20260907/f6c887a946a5444fb4c089214c10df03/c.html",
+    "source": "新华网",
+    "sourceUrl": "xinhuanet.com",
+    "pubDate": "2026-09-07T11:57:00.000Z",
+    "contentSnippet": "工业和信息化部发布《信息通信行业发展“十五五”规划》，提出到2030年信息通信行业收入达4.1万亿元，智能算力规模达9800EFLOPS，5G用户普及率达95%。规划明确适时启动6G商用，加快全国一体化算力网建设，有序部署万卡、十万卡及以上智算集群，并探索太空算力技术前瞻研究及生态培育。",
+    "vpnRequired": false
+  },
+  {
+    "title": "微信内测“小微AI社交”：约饭等需求可由AI先行代聊",
+    "link": "https://m.jiemian.com/article/15063609.html",
+    "source": "界面新闻",
+    "sourceUrl": "jiemian.com",
+    "pubDate": "2026-09-08T00:34:42.000Z",
+    "contentSnippet": "微信正在内测“小微AI社交”功能，用户告知自己的AI助手“小微”诉求后，可由其前往好友的“小微”先行沟通，对方确认后两个AI先交流再把结果带回，关键节点由用户拍板。实测显示AI对话记录仅在“小微”界面内留存，不会进入个人对话框。该功能目前仍在小范围测试阶段。",
+    "vpnRequired": false
   }
 ]
