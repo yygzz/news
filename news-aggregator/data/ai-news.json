@@ -183,5 +183,68 @@
     "pubDate": "2026-09-08T00:34:42.000Z",
     "contentSnippet": "微信正在内测“小微AI社交”功能，用户告知自己的AI助手“小微”诉求后，可由其前往好友的“小微”先行沟通，对方确认后两个AI先交流再把结果带回，关键节点由用户拍板。实测显示AI对话记录仅在“小微”界面内留存，不会进入个人对话框。该功能目前仍在小范围测试阶段。",
     "vpnRequired": false
+  },
+  {
+    "title": "2026年服贸会在北京启幕，AI成服务贸易新引擎",
+    "link": "http://www.xinhuanet.com/fortune/20260908/bc492da8b06e45b98d3f33f5674f508c/c.html",
+    "source": "新华网",
+    "sourceUrl": "xinhuanet.com",
+    "pubDate": "2026-09-08T14:31:02.000Z",
+    "contentSnippet": "2026年中国国际服务贸易交易会9月9日至13日在北京首钢园举行，90个国家（地区）和国际组织设展办会，1800余家企业线下参展。主题展首次设立中国服务案例展区，140余个案例覆盖服务贸易12大领域，以人工智能、大模型、智能体为核心技术的占比近四成，AI正成为服务贸易创新增长的重要引擎。",
+    "vpnRequired": false
+  },
+  {
+    "title": "英伟达129亿美元收购Hugging Face引发开放性争议",
+    "link": "https://m.36kr.com/p/3969889317974536",
+    "source": "36氪",
+    "sourceUrl": "36kr.com",
+    "pubDate": "2026-09-07T01:14:00.000Z",
+    "contentSnippet": "英伟达宣布以129.3亿美元收购全球最大开放模型平台Hugging Face，系其史上第二大收购。黄仁勋承诺平台保持开放、通过平台构建不要求使用英伟达算力，但外界担忧中立平台被并购后竞争天平可能悄然改变。交易预计2027年上半年完成，仍需通过多国监管审查。",
+    "vpnRequired": false
+  },
+  {
+    "title": "Mistral AI完成30亿欧元D轮融资，三星电子领投",
+    "link": "https://www.ithome.com/0/999/657.htm",
+    "source": "IT之家",
+    "sourceUrl": "ithome.com",
+    "pubDate": "2026-09-08T05:39:00.000Z",
+    "contentSnippet": "法国AI公司Mistral AI宣布完成30亿欧元D轮融资，投后估值超210亿欧元，创欧洲科技公司最大股权融资纪录。三星电子领投，EQT旗下Scaleup Europe Fund与PSG Equity联合领投，ASML、英伟达等老股东跟投。新资金将用于扩大算力与基础设施投入、加强前沿模型研发并推进国际扩张。",
+    "vpnRequired": false
+  },
+  {
+    "title": "DeepSeek V4.1 Flash开启限时内测：新架构、原生多模态",
+    "link": "http://news.qq.com/rain/a/20260908A0BSUW00",
+    "source": "腾讯科技",
+    "sourceUrl": "qq.com",
+    "pubDate": "2026-09-08T09:33:00.000Z",
+    "contentSnippet": "DeepSeek在官方交流群开启V4.1 Flash中间版本内测，新模型采用全新模型结构并原生支持多模态，官方称能力更强、速度更快、成本更低，计费与V4 Flash相同、每账号限20路并发，9月10日自动下线。内测问卷直接询问能否全面替换V4 Pro，透露出以Flash成本冲击Pro能力的产品策略。",
+    "vpnRequired": false
+  },
+  {
+    "title": "OpenAI宣布攻克纳维-斯托克斯千禧年难题",
+    "link": "https://tech.ifeng.com/c/8wDdJcF0zOi",
+    "source": "凤凰网科技",
+    "sourceUrl": "ifeng.com",
+    "pubDate": "2026-09-08T22:10:07.000Z",
+    "contentSnippet": "OpenAI宣布其内部多智能体系统完成纳维-斯托克斯方程存在性与光滑性问题的解答，并公开165页论文及Lean形式化证明。约1万个Agent协作88小时完成，消耗约3000亿输出Token。OpenAI表示不申领百万美元奖金，但成果引发研究优先权争议，数学界尚未完成审查。",
+    "vpnRequired": false
+  },
+  {
+    "title": "OpenAI发布ChatGPT Images 2.5：生成延迟最高降50%",
+    "link": "https://m.36kr.com/p/3975317790273801",
+    "source": "36氪",
+    "sourceUrl": "36kr.com",
+    "pubDate": "2026-09-09T00:11:00.000Z",
+    "contentSnippet": "OpenAI发布最新图像生成模型ChatGPT Images 2.5，生成延迟较上代最高降低50%，新增Sketch手绘参考、创作模板与图片内评论标注功能，可仅修改指定区域并在多轮编辑中保持一致性，API端首次拆分为Flare与Sunburst快慢两档模型。目前用户每周生成图片超30亿张。",
+    "vpnRequired": false
+  },
+  {
+    "title": "中信建投：推理侧及基础设施算力需求有望保持高景气",
+    "link": "https://www.jiemian.com/article/15071301.html",
+    "source": "界面新闻",
+    "sourceUrl": "jiemian.com",
+    "pubDate": "2026-09-09T00:12:00.000Z",
+    "contentSnippet": "中信建投研报指出，OpenAI新旗舰模型GPT-6 Astra强化复杂推理、代码生成与Agent自主执行能力，博通FY2026 Q3营收295.9亿美元、AI半导体收入同比增长221%。大模型能力升级叠加海外云厂商资本开支扩张，推理侧及基础设施算力需求有望保持高景气，继续看好芯片、光模块、交换机及PCB等环节。",
+    "vpnRequired": false
   }
 ]
